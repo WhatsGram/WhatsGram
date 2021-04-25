@@ -1,0 +1,24 @@
+{
+    "name": "WhatsGram",
+    "description": "Yet another usserbot for WhatsGram.",
+    "keywords": [
+      "WhatsApp",
+      "Telegram",
+      "Userbot",
+      "NodeJs"
+    ],
+    "repository": "https://github.com/WhatsGram/WhatsGram",
+    "website": "https://t.me/AffanTheBest",
+    "scripts": {
+      "worker": "npm start"
+    },
+    "buildpacks": [
+      {
+          "url": "heroku/nodejs"
+      },
+      {
+          "url": "https://buildpack-registry.s3.amazonaws.com/buildpacks/jontewks/puppeteer.tgz"
+      }
+  ],
+    "addons": []
+  }

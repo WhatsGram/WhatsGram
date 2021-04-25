@@ -8,7 +8,7 @@ const config = require("./config");
 const alive = require('./modules/alive');
 const short =  require("./modules/short");
 
-const tgbot = new Telegraf(config.TG_OWNER_ID);
+const tgbot = new Telegraf(config.TG_BOT_TOKEN);
 
 const SESSION_FILE_PATH = "./session.json";
 let sessionData;
