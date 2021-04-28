@@ -100,7 +100,7 @@ client.on('message_create' , async (msg) => {
     var aliveMsgData = await alive(await client.info.getBatteryStatus(), client.info.phone)
     client.sendMessage(msg.to, new MessageMedia(aliveMsgData.mimetype, aliveMsgData.data, aliveMsgData.filename), { caption: aliveMsgData.startMessage })
   }else{
-    handleCreateMsg(msg , client);
+    handleCreateMsg(msg , client , MessageMedia);
   }
 })
 
