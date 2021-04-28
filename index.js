@@ -72,7 +72,7 @@ if (!sessionData) {
 client.on("auth_failure" , reason => {
   const message = 'Failed to authenticate the client. Please fill env var again or generate session.json again.';
   console.log(message);
-  tgbot.sendMessage(config.TG_OWNER_ID , message ,
+  tgbot.telegram.sendMessage(config.TG_OWNER_ID , message ,
     {disable_notification: true})
 })
 
