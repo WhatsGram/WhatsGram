@@ -1,24 +1,35 @@
 {
-    "name": "WhatsGram",
-    "description": "Yet another usserbot for WhatsGram.",
-    "keywords": [
-      "WhatsApp",
-      "Telegram",
-      "Userbot",
-      "NodeJs"
-    ],
-    "repository": "https://github.com/WhatsGram/WhatsGram",
-    "website": "https://t.me/AffanTheBest",
-    "scripts": {
-      "worker": "npm start"
+  "name": "WhatsGram",
+  "description": "Yet another usserbot for WhatsGram.",
+  "keywords": ["WhatsApp", "Telegram", "Userbot", "NodeJs"],
+  "repository": "https://github.com/WhatsGram/WhatsGram",
+  "website": "https://t.me/AffanTheBest",
+  "scripts": {
+    "worker": "npm start"
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
     },
-    "buildpacks": [
-      {
-          "url": "heroku/nodejs"
-      },
-      {
-          "url": "https://buildpack-registry.s3.amazonaws.com/buildpacks/jontewks/puppeteer.tgz"
-      }
+    {
+      "url": "https://buildpack-registry.s3.amazonaws.com/buildpacks/jontewks/puppeteer.tgz"
+    }
   ],
-    "addons": []
-  }
+  "env": {
+    "TG_OWNER_ID": {
+      "description": "Your telegram ID.",
+      "value": "",
+      "required" : true
+    },
+    "TG_BOT_TOKEN": {
+      "description": "Your telegram bot token. Get it from https://t.me/BotFather",
+      "value": "",
+      "required" : true
+    },
+    "REMOVE_BG_API": {
+      "description": "Remove.bg API key. Get it from https://remove.bg",
+      "value": ""
+    }
+  },
+  "addons": []
+}
