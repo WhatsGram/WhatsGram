@@ -1,7 +1,8 @@
 const {exec} = require('child_process');
 const short =  require("../modules/short");
 const genCarbon = require("../modules/Carbon");
-
+const removebg = require("../modules/removebg");
+const fs = require("fs");
 const handleCreateMsg = async (msg , client , MessageMedia) => {
     if(msg.fromMe) {
         if(msg.body.startsWith("!short ")){
@@ -21,6 +22,16 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
                 console.log(error);
                 client.sendMessage(msg.to , data ? data : error);
             });
+        }else /*if (msg.body.startsWith("!removebg")){ */
+            if(msg.hasMedia){
+                const media = await msg.downloadMedia();
+                fs.writeFileSync('base.txt' , media.data)
+                console.log(media.mimetype);
+                await removebg(media.data).then(() => { 
+                    const media = MessageMedia.fromFilePath('./Removebg@WhatsGram.png');
+                    client.sendMessage(msg.to , media)
+                })
+            /*}*/
         }
     }
 }

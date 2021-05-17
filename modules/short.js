@@ -1,6 +1,5 @@
 const axios = require('axios');
 const validUrl = require('valid-url');
-const isgd = require('isgd');
 
 const short = async(url) => {
     if(validUrl.isUri(url)){
