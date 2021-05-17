@@ -41,6 +41,7 @@ _Send <code>!help</code> in Anywhere. Or read this [Command's Wiki](https://gith
 ### Credits :
 
 - [Whatsapp Web JS](https://github.com/pedroslopez/whatsapp-web.js/ "Whatsapp Web JS") - This project is fully depended on this awsome Library.
+- [Js Dh](https://t.me/GcamMasterRace) for WhatsGram banner and icon.
 
 
 ### License & Copyright :
