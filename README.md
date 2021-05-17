@@ -27,11 +27,11 @@ Soon adding more!
 ### Deploy :
 
 [![Deploy with Heroku](https://www.herokucdn.com/deploy/button.svg "Deploy with Heroku")](https://heroku.com/deploy?template=https://github.com/WhatsGram/WhatsGram "Deploy with Heroku")<br>
-Read the [wiki](https://github.com/TheWhatsBot/WhatsBot/wiki/Deploy-with-Heroku) before Deploy it with Heroku<br><br>
+Read the [wiki](https://github.com/WhatsGram/WhatsGram/wiki/Deploy-with-Heroku) before Deploy it with Heroku<br><br>
 
 ### Commands :
 
-_Send <code>!help</code> in Anywhere. Or read this [Command's Wiki](https://github.com/TheWhatsBot/WhatsBot/wiki/Commands "Command's Wiki")_
+_Send <code>!help</code> in Anywhere. Or read this [Command's Wiki](https://github.com/WhatsGram/WhatsGram/wiki/Commands "Command's Wiki")_
 
 ### Working :
 
