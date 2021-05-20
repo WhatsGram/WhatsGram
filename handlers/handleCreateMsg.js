@@ -1,6 +1,6 @@
 const {exec} = require('child_process');
 const short =  require("../modules/short");
-const genCarbon = require("../modules/Carbon");
+const genCarbon = require("../modules/carbon");
 const removebg = require("../modules/removebg");
 const fs = require("fs");
 const handleCreateMsg = async (msg , client , MessageMedia) => {
