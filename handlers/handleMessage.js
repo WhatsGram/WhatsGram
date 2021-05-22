@@ -1,3 +1,7 @@
+const { MessageMedia } = require('whatsapp-web.js');
+const fs = require('fs');
+var path = require('path');
+
 const handleMessage = async (message , TG_OWNER_ID , tgbot) => {
     const chat = await message.getChat();
     const contact = await message.getContact(); 
@@ -12,11 +16,12 @@ const handleMessage = async (message , TG_OWNER_ID , tgbot) => {
         fs.writeFile("image.png", data.data, "base64", (err) =>
             err ? console.error(err)
             : tgbot.telegram.sendPhoto(
-                TG_OWNER_ID, { source: "image.png" },
+                TG_OWNER_ID, { source: path.join(__dirname , '../image.png') },
                 { caption: tgMessage, disable_web_page_preview: true, parse_mode: "markdown", disable_notification: chat.isMuted }
-                )
+                ).then(() => {
+                    if (fs.existsSync(path.join(__dirname , "../image.png"))) fs.unlinkSync(path.join(__dirname , "../image.png"));
+                })
         );
-        if (fs.existsSync("image.png")) fs.unlink("image.png");
         });
     } else if (!message.from.includes("status") && !chat.isMuted) {
         tgbot.telegram.sendMessage(TG_OWNER_ID, tgMessage, 
