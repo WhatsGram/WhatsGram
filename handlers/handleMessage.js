@@ -6,7 +6,7 @@ const handleMessage = async (message , TG_OWNER_ID , tgbot) => {
         : `[${chat.name}](https://wa.me/'${message.from.split("@")[0]})`
     }. \nSender Id : _${message.from.split("@")[0]}_ \nMessage Id: _${ message.id.id }_ \n\n${message.body ? `Message Body: \n👇👇👇👇\n${message.body}` : ""}`;
 
-    if (message.hasMedia) {
+    if (message.hasMedia ) {
         await message.downloadMedia().then(async (data) => {
         const media = await new MessageMedia("image/png", data.data);
         fs.writeFile("image.png", data.data, "base64", (err) =>
