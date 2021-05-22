@@ -29,6 +29,11 @@
     "REMOVE_BG_API": {
       "description": "Remove.bg API key. Get it from https://remove.bg",
       "value": ""
+    },
+    "SESSION_DATA" : {
+      "description": "Puppeteer Session. Set it after succesfully deploying bot.",
+      "value": "_blank",
+      "required": false
     }
   },
   "addons": []
