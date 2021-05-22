@@ -10,9 +10,13 @@ const handleTgBot = (ctx , client) => {
           .split("Message Id: ")[1] .split(" ")[0];
         const waMessageId = `false_${waChatId}_${tempMessageId}`;
         console.log("Replied to specified message.");
-        client.sendMessage(waChatId, ctx.message.text, {
-          quotedMessageId: waMessageId,
-        });
+        if(ctx.message.text === '/mar') {
+          client.sendSeen(waChatId);
+        }else{
+          client.sendMessage(waChatId, ctx.message.text, {
+            quotedMessageId: waMessageId,
+          });
+        }
       } else {
         ctx.reply("Reply to a message to send reply on WhatsApp");
       }
