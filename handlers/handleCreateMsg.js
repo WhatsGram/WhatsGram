@@ -22,16 +22,6 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
                 console.log(error);
                 client.sendMessage(msg.to , data ? data : error);
             });
-        // }else if (msg.body.startsWith("!removebg")){ 
-        //     if(msg.hasMedia){
-        //         const media = await msg.downloadMedia();
-        //         fs.writeFileSync('base.txt' , media.data)
-        //         console.log(media.mimetype);
-        //         await removebg(media.data).then(() => { 
-        //             const media = MessageMedia.fromFilePath('./Removebg@WhatsGram.png');
-        //             client.sendMessage(msg.to , media)
-        //         })
-        //     }
         }
     }
 }
