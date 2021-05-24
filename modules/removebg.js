@@ -1,6 +1,6 @@
 const fs = require('fs');
 const config = require('../config');
-var request = require('request');
+// var request = require('request');
 
 const removebg = async (imgData) => {
   fs.writeFileSync('image.png', imgData , 'base64');
