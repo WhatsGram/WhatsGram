@@ -2,7 +2,7 @@ const {exec} = require('child_process');
 const short =  require("../modules/short");
 const genCarbon = require("../modules/carbon");
 const removebg = require("../modules/removebg");
-const {updateHerokuApp} = require("../modules/heroku");
+const {updateHerokuApp , restartDyno} = require("../modules/heroku");
 const handleCreateMsg = async (msg , client , MessageMedia) => {
     if(msg.fromMe) {
         if(msg.body.startsWith("!short ")){
@@ -28,6 +28,12 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
                 const message = `*${result.message}*, ${result.status ? 'It may take some time so have patient.\n\n*Build Logs:* '+result.build_logs : ''}`;
                 client.sendMessage(msg.to , message);
             });
+        }else if(msg.body === '!restart'){
+            msg.delete(true);
+            restartDyno().then(result => {
+                const message = `*${result.message}*`;
+                client.sendMessage(msg.to , message);
+            })
         }
     }
 } 

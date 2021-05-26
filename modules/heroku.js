@@ -42,4 +42,34 @@ const updateHerokuApp = async () => {
     return output;
 }
 
-module.exports = {updateHerokuApp}
+const restartDyno = async () => {
+    let output = {};
+    try {
+        if(HEROKU_APP_NAME && HEROKU_API_KEY) {
+            const restartRequest = (await axios({
+                method: 'DELETE',
+                url: `https://api.heroku.com/apps/${HEROKU_APP_NAME}/dynos/worker`,
+                headers: headers
+            }));
+            if(!restartRequest || restartRequest.status !== 202){
+                output = {
+                    status: false,
+                    message: 'Failed to restart. PLease try again later.'
+                }
+            }
+        }else{
+            output = {
+                status: false,
+                message: 'Not a heroku app. If it is then please check heroku vars.'
+            }
+        }
+    }catch(err){
+        output = {
+            status: false,
+            message: 'An error has been occurred while restarting , please check heroku vars and try again.'
+        }
+    }
+    return output;
+}
+
+module.exports = {updateHerokuApp , restartDyno}
