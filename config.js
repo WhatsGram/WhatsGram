@@ -5,5 +5,7 @@ const fs = require('fs');
 const TG_BOT_TOKEN = process.env.TG_BOT_TOKEN || '';
 const TG_OWNER_ID = process.env.TG_OWNER_ID || '';
 const REMOVE_BG_API = process.env.REMOVE_BG_API || undefined;
+const HEROKU_API_KEY = process.env.HEROKU_API_KEY || '';
+const HEROKU_APP_NAME = process.env.HEROKU_APP_NAME || '';
 
-module.exports = {TG_BOT_TOKEN , TG_OWNER_ID , REMOVE_BG_API}
+module.exports = {TG_BOT_TOKEN , TG_OWNER_ID , REMOVE_BG_API, HEROKU_API_KEY, HEROKU_APP_NAME}

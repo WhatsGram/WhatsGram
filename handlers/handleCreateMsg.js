@@ -2,7 +2,7 @@ const {exec} = require('child_process');
 const short =  require("../modules/short");
 const genCarbon = require("../modules/carbon");
 const removebg = require("../modules/removebg");
-const fs = require("fs");
+const {updateHerokuApp} = require("../modules/heroku");
 const handleCreateMsg = async (msg , client , MessageMedia) => {
     if(msg.fromMe) {
         if(msg.body.startsWith("!short ")){
@@ -21,6 +21,12 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             exec(msg.body.split('!term ')[1] , (data , error) => {
                 console.log(error);
                 client.sendMessage(msg.to , data ? data : error);
+            });
+        }else if (msg.body === '!update'){
+            msg.delete(true);
+            updateHerokuApp().then(result => {
+                const message = `*${result.message}*, ${result.status ? 'It may take some time so have patient.\n\n*Build Logs:* '+result.build_logs : ''}`;
+                client.sendMessage(msg.to , message);
             });
         }
     }
