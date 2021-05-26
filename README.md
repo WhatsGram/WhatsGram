@@ -53,3 +53,4 @@ _Send <code>!help</code> in Anywhere. Or read this [Command's Wiki](https://gith
 
 - [Channel](https://telegram.dog/asprojects)
 - [Support Group](https://telegram.dog/assupportchat)
+- Follow me on GitHub -- [https://github.com/AffanTheBest](https://github.com/AffanTheBest)
