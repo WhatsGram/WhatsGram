@@ -34,6 +34,16 @@
       "description": "Puppeteer Session. Set it after succesfully deploying bot.",
       "value": "_blank",
       "required": false
+    },
+    "HEROKU_APP_NAME":{
+      "description": "Heroku app name on which WhatsGram is deployed.",
+      "value": "",
+      "required": true
+    },
+    "HEROKU_API_KEY":{
+      "description": "Heroku API key. Get it from https://dashboard.heroku.com/account",
+      "value": "",
+      "required": true
     }
   },
   "addons": []
