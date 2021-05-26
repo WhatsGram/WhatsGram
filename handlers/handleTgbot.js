@@ -25,7 +25,7 @@ const handleTgBot = (ctx , client) => {
         updateHerokuApp().then(result => {
           const message = `**${result.message}** ${result.status ? 'It may take some time so have patient.\n\n**Build Logs:** [CLICK HERE]('+result.build_logs+')' : ''}`;
           ctx.reply( message , { parse_mode: "markdown", disable_web_page_preview: true, reply_to_message_id:ctx.update.message.message_id, allow_sending_without_reply:true});
-      })} else {
+      })}else {
         ctx.reply("Reply to a message to send reply on WhatsApp");
       }
 }

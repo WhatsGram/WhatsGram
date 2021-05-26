@@ -30,6 +30,6 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             });
         }
     }
-}
+} 
 
 module.exports = handleCreateMsg;
