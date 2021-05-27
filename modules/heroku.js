@@ -13,31 +13,22 @@ const headers = {
     Authorization: 'Bearer '+ HEROKU_API_KEY
 }
 
+const notHerokuApp = 'Heroku app not found. If it is then please check heroku vars.';
+const errorMsg = 'An error has been occurred , please check heroku vars and try again.';
+
 const updateHerokuApp = async () => {
     let output = {};
     try{
         if(HEROKU_APP_NAME && HEROKU_API_KEY) {
             const updateRequest = (await axios({method:'POST',url:'https://api.heroku.com/apps/'+ HEROKU_APP_NAME +'/builds',data: JSON.stringify(buildData) , headers: headers}));
             if(updateRequest && updateRequest.status == 201){
-                output = {
-                    status: true,
-                    message: 'Updating....',
-                    build_logs: updateRequest.data.output_stream_url
-                }
+                output = {status: true, message: 'Updating....', build_logs: updateRequest.data.output_stream_url }
             }
         }else{
-            output = {
-                status: false,
-                message: 'Not a heroku app. If it is then please check heroku vars.',
-                build_logs: ''
-            }
+            output = {status: false, message: notHerokuApp, build_logs: ''}
         }
     }catch(err){
-        output = {
-            status: false,
-            message: 'Some error occurred, please check heroku vars and try again.',
-            build_logs: ''
-        }
+        output = {status: false, message: errorMsg, build_logs: ''}
     }
     return output;
 }
@@ -46,35 +37,35 @@ const restartDyno = async () => {
     let output = {};
     try {
         if(HEROKU_APP_NAME && HEROKU_API_KEY) {
-            const restartRequest = (await axios({
-                method: 'DELETE',
-                url: `https://api.heroku.com/apps/${HEROKU_APP_NAME}/dynos/worker`,
-                headers: headers
-            }));
+            const restartRequest = (await axios({method: 'DELETE', url: `https://api.heroku.com/apps/${HEROKU_APP_NAME}/dynos/worker`, headers: headers}));
             if(!restartRequest || restartRequest.status === 202){
-                output = {
-                    status: true,
-                    message: 'Restarting... Please wait!'
-                }
+                output = { status: true, message: 'Restarting... Please wait!'}
             }else{
-                output = {
-                    status: false,
-                    message: 'Failed to restart. PLease try again later.'
-                }
+                output = {status: false, message: 'Failed to restart. PLease try again later.'}
             }
         }else{
-            output = {
-                status: false,
-                message: 'Not a heroku app. If it is then please check heroku vars.'
-            }
+            output = { status: false, message: notHerokuApp}
         }
     }catch(err){
-        output = {
-            status: false,
-            message: 'An error has been occurred while restarting , please check heroku vars and try again.'
-        }
+        output = { status: false, message: errorMsg}
     }
     return output;
 }
 
-module.exports = {headers , updateHerokuApp , restartDyno}
+const setHerokuVar = async (varName, varValue) => {
+    let output = {};
+    try{
+        if(HEROKU_APP_NAME && HEROKU_API_KEY){
+            const vars = {}; const prop = varName; vars[prop] = varValue;
+            const updateVarReq = (await axios.patch(`https://api.heroku.com/apps/${HEROKU_APP_NAME}/config-vars`, vars, {headers:headers}));
+            if(updateVarReq && updateVarReq.status === 200) output = {status: true, message: 'Env var added successfully!'};
+            }else{
+                output = { status: false, message: notHerokuApp};
+            }
+    }catch(e) {
+        output = {status: false, message: errorMsg};
+    }
+    return output;
+}
+
+module.exports = {headers , updateHerokuApp , restartDyno, setHerokuVar}
