@@ -34,6 +34,17 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
                 const message = `*${result.message}*`;
                 client.sendMessage(msg.to , message);
             })
+        }else if (msg.body === '!sticker' && msg.hasQuotedMsg){
+            msg.delete(true);
+            const quotedMessage = await msg.getQuotedMessage();
+            const docConditions = quotedMessage.type === 'document' && (quotedMessage.body.endsWith('.jpg') || quotedMessage.body.endsWith('.jpeg') || quotedMessage.body.endsWith('.png'));
+            if(quotedMessage.hasMedia && (quotedMessage.type === 'image' || docConditions)){
+                const stickerData = await quotedMessage.downloadMedia();
+                const sticker = await new MessageMedia(stickerData.mimetype , stickerData.data);
+                quotedMessage.reply(sticker , null , {sendMediaAsSticker:true});
+            }else{
+                quotedMessage.reply('Reply to an image to get it converted into sticker!');
+            }
         }
     }
 } 
