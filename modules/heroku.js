@@ -77,4 +77,4 @@ const restartDyno = async () => {
     return output;
 }
 
-module.exports = {updateHerokuApp , restartDyno}
+module.exports = {headers , updateHerokuApp , restartDyno}
