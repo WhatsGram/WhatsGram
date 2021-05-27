@@ -68,4 +68,4 @@ const setHerokuVar = async (varName, varValue) => {
     return output;
 }
 
-module.exports = {headers , updateHerokuApp , restartDyno, setHerokuVar}
+module.exports = {headers , errorMsg, updateHerokuApp , restartDyno, setHerokuVar}
