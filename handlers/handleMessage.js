@@ -12,15 +12,18 @@ const handleMessage = async (message , TG_OWNER_ID , tgbot) => {
 
     if (message.hasMedia && !chat.isMuted) {
         await message.downloadMedia().then(async (data) => {
-        const media = await new MessageMedia("image/png", data.data);
-        fs.writeFile("image.png", data.data, "base64", (err) =>
+        let fileName;
+        message.type === "image" ? fileName = "document.png" : fileName =  message.body;
+        const messageData = {
+            document : {source: path.join(__dirname , '../' , fileName)},
+            options: { caption: tgMessage, disable_web_page_preview: true, parse_mode: "markdown" }
+        }
+        fs.writeFile(fileName , data.data, "base64", (err) =>
             err ? console.error(err)
-            : tgbot.telegram.sendPhoto(
-                TG_OWNER_ID, { source: path.join(__dirname , '../image.png') },
-                { caption: tgMessage, disable_web_page_preview: true, parse_mode: "markdown", disable_notification: chat.isMuted }
-                ).then(() => {
-                    if (fs.existsSync(path.join(__dirname , "../image.png"))) fs.unlinkSync(path.join(__dirname , "../image.png"));
-                })
+            : (message.type === "image" ?
+                tgbot.telegram.sendPhoto( TG_OWNER_ID, messageData.document, messageData.options)
+              : tgbot.telegram.sendDocument( TG_OWNER_ID, messageData.document, messageData.options))
+            .then(() => { fs.unlinkSync(path.join(__dirname , '../' , fileName)) })
         );
         });
     } else if (!message.from.includes("status") && !chat.isMuted) {
