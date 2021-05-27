@@ -9,6 +9,7 @@ const alive = require('./modules/alive');
 const handleMessage = require("./handlers/handleMessage");
 const handleCreateMsg = require("./handlers/handleCreateMsg");
 const handleTgBot = require("./handlers/handleTgbot");
+const {setHerokuVar} = require("./modules/heroku");
 
 const tgbot = new Telegraf(config.TG_BOT_TOKEN);
 
@@ -49,12 +50,15 @@ async function generateQr() {
       process.exit();
     }, 90 * 1000);
   });
-  client.on("authenticated", (session) => {
-    tgbot.telegram.sendMessage(config.TG_OWNER_ID, "`"+JSON.stringify(session)+"`", {parse_mode: "markdown"});
-    tgbot.telegram.sendMessage(config.TG_OWNER_ID, "Copy above session and set it to heroku vars as SESSION_DATA");
-    sessionData = session;
-    console.log( JSON.stringify(session) + "\n\nCopy above session and set it to heroku vars as SESSION_DATA" );
-    fs.writeFileSync("session.json", JSON.stringify(session));
+  client.on("authenticated", async (session) => {
+    if(config.HEROKU_APP_NAME && config.HEROKU_API_KEY){
+      await setHerokuVar('SESSION_DATA' , JSON.stringify(session));
+    }
+    await tgbot.telegram.sendMessage(config.TG_OWNER_ID, "`"+JSON.stringify(session)+"`", {parse_mode: "markdown"});
+    await tgbot.telegram.sendMessage(config.TG_OWNER_ID, "Copy above session and set it to heroku vars as SESSION_DATA");
+    sessionData = await session;
+    await console.log( JSON.stringify(session) + "\n\nCopy above session and set it to heroku vars as SESSION_DATA" );
+    await fs.writeFileSync("session.json", JSON.stringify(session));
   });
   client.on("logout", () => {
     console.log( "Looks like you've been logged out. Please generate session again." );
