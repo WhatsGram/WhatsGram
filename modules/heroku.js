@@ -51,7 +51,12 @@ const restartDyno = async () => {
                 url: `https://api.heroku.com/apps/${HEROKU_APP_NAME}/dynos/worker`,
                 headers: headers
             }));
-            if(!restartRequest || restartRequest.status !== 202){
+            if(!restartRequest || restartRequest.status === 202){
+                output = {
+                    status: true,
+                    message: 'Restarting... Please wait!'
+                }
+            }else{
                 output = {
                     status: false,
                     message: 'Failed to restart. PLease try again later.'
