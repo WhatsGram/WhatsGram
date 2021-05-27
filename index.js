@@ -54,8 +54,8 @@ async function generateQr() {
     if(config.HEROKU_APP_NAME && config.HEROKU_API_KEY){
       await setHerokuVar('SESSION_DATA' , JSON.stringify(session)).then(result => {
         if(result.message == errorMsg) 
-          await tgbot.telegram.sendMessage(config.TG_OWNER_ID, "`"+JSON.stringify(session)+"`", {parse_mode: "markdown"});
-          await tgbot.telegram.sendMessage(config.TG_OWNER_ID, "Copy above session and set it to heroku vars as SESSION_DATA");
+          tgbot.telegram.sendMessage(config.TG_OWNER_ID, "`"+JSON.stringify(session)+"`", {parse_mode: "markdown"});
+          tgbot.telegram.sendMessage(config.TG_OWNER_ID, "Copy above session and set it to heroku vars as SESSION_DATA");
       })
     }
     sessionData = await session;
