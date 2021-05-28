@@ -92,7 +92,7 @@ client.on("ready", () => {
 });
 
 tgbot.on("message", (ctx) => {
-  handleTgBot(ctx , client);
+  handleTgBot(ctx , client , MessageMedia);
 });
 
 client.on("message", async (message) => {
