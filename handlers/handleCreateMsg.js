@@ -2,7 +2,8 @@ const {exec} = require('child_process');
 const short =  require("../modules/short");
 const genCarbon = require("../modules/carbon");
 const removebg = require("../modules/removebg");
-const {updateHerokuApp , restartDyno} = require("../modules/heroku");
+const {updateHerokuApp , restartDyno, setHerokuVar} = require("../modules/heroku");
+const help = require("../modules/help");
 const handleCreateMsg = async (msg , client , MessageMedia) => {
     if(msg.fromMe) {
         if(msg.body.startsWith("!short ")){
@@ -45,6 +46,15 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             }else{
                 quotedMessage.reply('Reply to an image to get it converted into sticker!');
             }
+        }else if(msg.body.startsWith('!setvar ')){
+            msg.delete(true);
+            const extractData = (a , b) => msg.body.split(a)[1].split(b)[0].trim();
+            const request = await setHerokuVar(extractData('-n' , '-v') , extractData('-v' , '-n'));
+            client.sendMessage(msg.to , request.message);
+        }else if(msg.body.startsWith('!help')) {
+            msg.delete(true);
+            const helpMsg = await help.waHelp(msg.body);
+            client.sendMessage(msg.to , helpMsg);
         }
     }
 } 
