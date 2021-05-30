@@ -16,25 +16,24 @@ const handleTgBot = async (ctx , client , MessageMedia) => {
         const waMessageId = `false_${waChatId}_${tempMessageId}`;
        if(ctx.message.text === '/mar') {
           client.sendSeen(waChatId);
-        }else if( (ctx.message.photo || ctx.message.video || ctx.message.audio || ctx.message.document) && waChatId){
+        }else if(!ctx.message.text && waChatId){
           const getMediaInfo = (msg) => {
-            const mediaObjKey = Object.keys(msg)[Object.keys(msg).length-1];
-            const mediaObj = msg[mediaObjKey];
-            switch (mediaObjKey) {
-              case 'photo': return {mimeType: 'image/png', sendAsDocument: false, fileName: '', fileId: mediaObj[0].file_id}; break;
-              case 'video': return {mimeType: mediaObj.mime_type, sendAsDocument: false, fileName: mediaObj.file_name, fileId: mediaObj.file_id}; break;
-              case 'audio': return {mimeType: mediaObj.mime_type, sendAsDocument: false, fileName: mediaObj.file_name, fileId: mediaObj.file_id}; break;
-              default: return {mimeType: mediaObj.mime_type, sendAsDocument: true, fileName: mediaObj.file_name ? mediaObj.file_name : null, fileId: mediaObj.file_id}; break;
+            const mediaType = msg.photo ? 'photo' : msg.video ? 'video' : msg.audio ? 'audio' : msg.voice ? 'voice' : 'document'; 
+            const mediaObj = msg[mediaType];
+            const [type, mimeType, SAD, fileName, fileId, caption, SAV] = [mediaType,mediaObj.mime_type,false,null,mediaObj.file_id?mediaObj.file_id:mediaObj[0].file_id,msg.caption?msg.caption:'',mediaType=='voice'];
+            switch (mediaType) {
+              case 'photo': return {type, mimeType: 'image/png', SAD, fileName, fileId, caption,SAV}; break;
+              case 'video': return {type, mimeType, SAD, fileName, fileId, caption, SAV}; break;
+              case 'audio': return {type, mimeType, SAD, fileName, fileId, caption, SAV}; break;
+              case 'voice': return {type, mimeType, SAD, fileName, fileId, caption, SAV}; break;
+              default: return {type, mimeType, SAD: true, fileName: mediaObj.file_name ? mediaObj.file_name : null, fileId, caption, SAV}; break;
             }
           }
-          // const isPhoto = ctx.message.photo ? true : false;
-          // const isDocument = ctx.message.document ? true : false;
-          // const receivedDoc = isPhoto ? ctx.message.photo[0] : ctx.message[Object.keys(ctx.message)[Object.keys(ctx.message).length-1]];
           const mediaInfo = await getMediaInfo(ctx.message);
           const fileInfo = await ctx.telegram.getFile(mediaInfo.fileId);
           const base64Data = await Buffer.from(((await axios.get(`https://api.telegram.org/file/bot${TG_BOT_TOKEN}/${fileInfo.file_path}`, { responseType: 'arraybuffer' })).data)).toString('base64');
           const fileData = new MessageMedia(mediaInfo.mimeType, base64Data , mediaInfo.fileName);
-          client.sendMessage(waChatId, fileData, { quotedMessageId: waMessageId, sendMediaAsDocument: mediaInfo.sendAsDocument});
+          client.sendMessage(waChatId, fileData, { quotedMessageId: waMessageId, sendMediaAsDocument: mediaInfo.SAD, sendAudioAsVoice:mediaInfo.SAV, caption:mediaInfo.caption });
         }else{
           client.sendMessage(waChatId, ctx.message.text, { quotedMessageId: waMessageId });
         }
