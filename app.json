@@ -32,7 +32,7 @@
     },
     "SESSION_DATA" : {
       "description": "Puppeteer Session. Set it after succesfully deploying bot.",
-      "value": "_blank",
+      "value": "",
       "required": false
     },
     "HEROKU_APP_NAME":{
