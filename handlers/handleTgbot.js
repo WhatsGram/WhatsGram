@@ -4,6 +4,7 @@ const axios = require('axios');
 const fs = require('fs');
 
 const handleTgBot = async (ctx , client , MessageMedia) => {
+  if(ctx.message.from.id == TG_OWNER_ID){
     if (
         ctx.message.reply_to_message != undefined &&
         ctx.message.reply_to_message != null
@@ -49,6 +50,9 @@ const handleTgBot = async (ctx , client , MessageMedia) => {
       })}else {
         ctx.reply("Reply to a message to send reply on WhatsApp");
       }
+  }else{
+    ctx.reply('You\'re not allowed to this')
+  }
 }
 
 module.exports = handleTgBot;
