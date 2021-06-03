@@ -90,6 +90,21 @@ client.on("ready", () => {
   tgbot.telegram.sendMessage( config.TG_OWNER_ID, message, {disable_notification: true});
   if (fs.existsSync("qr.png")) fs.unlinkSync("qr.png");
 });
+// Telegram Bot
+tgbot.start(ctx => ctx.replyWithMarkdown(`Hey **${ctx.message.from.first_name}**, Welcome! \nI can notify you about new messages of WhatsApp. \n\nPowered by [WhatsGram](https://github.com/WhatsGram/WhatsGram).`,
+  {disable_web_page_preview: true,
+   reply_markup:{
+    inline_keyboard: [[{text:'WhatsGram Repo', url:'https://github.com/WhatsGram/WhatsGram'},{text:'Support Group', url:'https://t.me/assupportchat'}],
+                      [{text:'Developer', url:'https://github.com/AffanTheBest'}, {text:'Donate', url:'https://ko-fi.com/affanthebest'}]]
+  }}
+));
+tgbot.command('donate', ctx => {
+  ctx.replyWithMarkdown('Thank you for showing intrest in donating! \nYou can donate me using following methods 👇\n\n*UPI Address*: `siddiquiaffan201@okaxis` \n\nOr you can use following links.',
+  {disable_web_page_preview: true,
+   reply_markup:{
+     inline_keyboard: [[{text: 'Ko-fi', url: 'https://ko-fi.com/affanthebest'}, {text: 'Paypal', url: 'https://paypal.me/affanthebest'}]]
+  }})
+});
 
 tgbot.on("message", (ctx) => {
   handleTgBot(ctx , client , MessageMedia);
