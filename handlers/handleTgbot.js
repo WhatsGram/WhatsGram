@@ -36,10 +36,10 @@ const handleTgBot = async (ctx , client , MessageMedia) => {
       ) {
         const getIds = () => {
           const tempChatId = ( ctx.message.reply_to_message.text || ctx.message.reply_to_message.caption )
-            .split("Sender Id : ")[1] .split(" ")[0];
+          .split("Chat Id: ")[1] .split(" ")[0];
           const waChatId = tempChatId.includes("-") ? `${tempChatId}@g.us` : `${tempChatId}@c.us`;
           const tempMessageId = ( ctx.message.reply_to_message.text || ctx.message.reply_to_message.caption )
-            .split("Message Id: ")[1] .split(" ")[0];
+            .split("Msg Id: ")[1] .split(" ")[0];
           const waMessageId = `false_${waChatId}_${tempMessageId}`;
           return {waChatId, waMessageId};
         } 
