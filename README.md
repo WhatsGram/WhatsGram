@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://github.com/TheWhatsBot/WhatsBot"><img src="https://telegra.ph/file/6196eea17a9913bcf458f.png" alt="whatsgram" width="290"></a>
+  <a href="https://github.com/WhatsGram/WhatsGram"><img src="https://telegra.ph/file/6196eea17a9913bcf458f.png" alt="whatsgram" width="290"></a>
   <br>
 <b>WhatsGram</b>
 </h1>
