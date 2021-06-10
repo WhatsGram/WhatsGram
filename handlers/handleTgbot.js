@@ -18,17 +18,15 @@ const getMediaInfo = (msg) => {
 
 const handleTgBot = async (ctx , client , MessageMedia) => {
   const sendMsgToWa = async (msg, chatId, msgId) => {
-    const waChat = chatId.includes('-') ? chatId + '@g.us' : chatId + '@c.us';
     if(!msg.text && chatId){
       const mediaInfo = await getMediaInfo(msg);
       const fileInfo = await ctx.telegram.getFile(mediaInfo.fileId);
       const base64Data = await Buffer.from(((await axios.get(`https://api.telegram.org/file/bot${TG_BOT_TOKEN}/${fileInfo.file_path}`, { responseType: 'arraybuffer' })).data)).toString('base64');
       const fileData = new MessageMedia(mediaInfo.mimeType, base64Data , mediaInfo.fileName);
-      client.sendMessage(waChat, fileData, { quotedMessageId: msgId ? msgId : null, sendMediaAsDocument: mediaInfo.SAD, sendAudioAsVoice:mediaInfo.SAV, caption:mediaInfo.caption });
+      client.sendMessage(chatId, fileData, { quotedMessageId: msgId ? msgId : null, sendMediaAsDocument: mediaInfo.SAD, sendAudioAsVoice:mediaInfo.SAV, caption:mediaInfo.caption });
     }else{
-      const message = msg.text.startsWith('/send') ? msg.text.split(chatId)[1].trim() : msg.text;
-      console.log(message); 
-      client.sendMessage(waChat, message, { quotedMessageId: msgId ? msgId : null });
+      const message = msg.text.startsWith('/send') ? msg.text.split(chatId.split('@')[0])[1].trim() : msg.text;
+      client.sendMessage(chatId, message, { quotedMessageId: msgId ? msgId : null });
     }
   }
   const getIds = () => {
@@ -49,13 +47,13 @@ const handleTgBot = async (ctx , client , MessageMedia) => {
         if(ctx.message.text === '/mar' && getIds().waChatId) {
           client.sendSeen(getIds().waChatId);
         }else if(ctx.message.text && ctx.message.text.startsWith('/send')){
-            const chatId = ctx.message.text.split(' ')[1].trim();
+            const chatId = ctx.message.text.split(' ')[1].trim() + '@c.us';
             sendMsgToWa(ctx.message.reply_to_message, chatId).then(() => tgResponse('Message sent successfully.'));
         }else if(getIds().waChatId){
           sendMsgToWa(ctx.message, getIds().waChatId, getIds().waMessageId).then(() => tgResponse('Replied successfully.'));
         }
       }else if(ctx.message.text.startsWith('/send')) {
-        const chatId = ctx.message.text.split(' ')[1].trim();
+        const chatId = ctx.message.text.split(' ')[1].trim() + '@c.us';
         sendMsgToWa(ctx.message.reply_to_message ? ctx.message.reply_to_message : ctx.message, chatId); 
       }else if(ctx.message.text === '/update') {
         updateHerokuApp().then(result => {
