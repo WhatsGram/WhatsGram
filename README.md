@@ -21,7 +21,9 @@
 
 ### Pre Added Plugins :
 
-- **term** - Terminal in Whatsapp
+- **term** - Terminal in Whatsapp  
+- **sticker** - Convert image to sticker
+- **carbon** - Create beautiful images using carbon.now.sh
 Soon adding more!
 
 ### Deploy :
