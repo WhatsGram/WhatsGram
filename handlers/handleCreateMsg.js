@@ -51,6 +51,17 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             const extractData = (a , b) => msg.body.split(a)[1].split(b)[0].trim();
             const request = await setHerokuVar(extractData('-n' , '-v') , extractData('-v' , '-n'));
             client.sendMessage(msg.to , request.message);
+        }else if(msg.body.startsWith('!removebg') && msg.hasQuotedMsg){
+            const quotedMessage = await msg.getQuotedMessage();
+            const docConditions = quotedMessage.type === 'document' && (quotedMessage.body.endsWith('.jpg') || quotedMessage.body.endsWith('.jpeg') || quotedMessage.body.endsWith('.png'));
+            if(quotedMessage.hasMedia && (quotedMessage.type === 'image' || docConditions)){
+                msg.delete(true);
+                msg.reply('Processing....')
+                const img = await quotedMessage.downloadMedia();
+                const result = await removebg(img.data);
+                const noBgImg = new MessageMedia('image/png' , result.img, 'NoBg@WhatsGram.png');
+                quotedMessage.reply(noBgImg, null, {sendMediaAsDocument: true});
+            }else{ msg.reply('Please reply to an image file.') }
         }else if(msg.body.startsWith('!help')) {
             msg.delete(true);
             const helpMsg = await help.waHelp(msg.body);

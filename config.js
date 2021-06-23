@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config()
 const fs = require('fs');
 
 // const SESSION_DATA = process.env.SESSION_DATA || fs.existsSync('session.json') ? fs.readFileSync(__dirname + '/session.json', { encoding: 'utf8' }) : '';
