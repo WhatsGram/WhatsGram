@@ -4,6 +4,7 @@ const genCarbon = require("../modules/carbon");
 const removebg = require("../modules/removebg");
 const {updateHerokuApp , restartDyno, setHerokuVar} = require("../modules/heroku");
 const help = require("../modules/help");
+const {mute, unmute} = require('../modules/utils');
 const handleCreateMsg = async (msg , client , MessageMedia) => {
     if(msg.fromMe) {
         if(msg.body.startsWith("!short ")){
@@ -62,7 +63,21 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
                 const noBgImg = new MessageMedia('image/png' , result.img, 'NoBg@WhatsGram.png');
                 quotedMessage.reply(noBgImg, null, {sendMediaAsDocument: true});
             }else{ msg.reply('Please reply to an image file.') }
-        }else if(msg.body.startsWith('!help')) {
+        }else if(msg.body.startsWith('!mute') && !msg.to.includes('-')){
+            msg.delete(true);
+            const unmuteTime = msg.body.split('!mute ')[1] == undefined ? Infinity :  msg.body.split('!mute ')[1];
+            client.sendMessage(msg.to, (await mute(msg.to, unmuteTime, client)).msg);
+        }else if(msg.body == '!unmute' && !msg.to.includes("-")){
+            msg.delete(true);
+            msg.reply((await unmute(msg.to, client)).msg);
+        }else if(msg.body == '!del'){
+            msg.delete(true);
+            if(msg.hasQuotedMsg){
+                const quotedMsg = await msg.getQuotedMessage();
+                quotedMsg.fromMe ? quotedMsg.delete(true) : msg.reply('*Error:* Can\'t delete that message.')
+            }else msg.reply('*Error:* Reply to a message to delete it.')
+        }
+        else if(msg.body.startsWith('!help')) {
             msg.delete(true);
             const helpMsg = await help.waHelp(msg.body);
             client.sendMessage(msg.to , helpMsg);
