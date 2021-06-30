@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "dotenv": "^8.6.0",
+    "mongodb": "^3.6.9",
     "nodemon": "^2.0.7",
     "qrcode": "^1.4.4",
     "qrcode-terminal": "^0.12.0",
