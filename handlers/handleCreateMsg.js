@@ -5,9 +5,27 @@ const removebg = require("../modules/removebg");
 const {updateHerokuApp , restartDyno, setHerokuVar} = require("../modules/heroku");
 const help = require("../modules/help");
 const {mute, unmute} = require('../modules/utils');
+const pmguard = require('../modules/pmguard');
+const config = require('../config')
 const handleCreateMsg = async (msg , client , MessageMedia) => {
     if(msg.fromMe) {
-        if(msg.body.startsWith("!short ")){
+        if (msg.body == "!allow" && config.pmguard_enabled == "true" && !msg.to.includes("-")) { // allow and unmute the chat (PMPermit module)
+            msg.delete(true);
+            pmguard.allow(msg.to.split("@")[0]);
+            var chat = await msg.getChat();
+            await chat.unmute(true);
+            msg.reply("Allowed to direct message!");
+        }else if(msg.body.startsWith('!setpmmsg') && !msg.to.includes("-")){
+            msg.delete(true);
+            if(config.pmguard_enabled == "true"){
+                const pmMsg = msg.body.replace('!setpmmsg ', '');
+                const readReq = await pmguard.readPmMsg();
+                const setReq = await pmguard.setPmMsg(pmMsg, readReq == 'failed' ? 'insert' : 'update');
+                client.sendMessage(msg.to, setReq == 'success' ? 'Pm Message updated sucessfully!': 'Failed to update pm message.')
+            }else{
+                client.sendMessage(msg.to, '*Error:* Can\'t upadate message, PmGuard is disbaled.')
+            }
+        }else if(msg.body.startsWith("!short ")){
             msg.delete(true);
             short(msg.body.split('!short ')[1]).then(url => {
             client.sendMessage(msg.to, `${url.startsWith("https://") ? `Here is the shorten URL ${url}` : 'PLease send a valid url to short.'}`);

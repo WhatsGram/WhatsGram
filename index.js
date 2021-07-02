@@ -111,7 +111,7 @@ tgbot.on("message", (ctx) => {
 });
 
 client.on("message", async (message) => {
-  handleMessage(message , config.TG_OWNER_ID , tgbot);
+  handleMessage(message , config.TG_OWNER_ID , tgbot, client);
 });
 
 client.on('message_create' , async (msg) => {
