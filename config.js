@@ -8,6 +8,6 @@ const REMOVE_BG_API = process.env.REMOVE_BG_API || undefined;
 const HEROKU_API_KEY = process.env.HEROKU_API_KEY || '';
 const HEROKU_APP_NAME = process.env.HEROKU_APP_NAME || '';
 const DB_URL = process.env.DB_URL || '';
-const pmguard_enabled = process.env.PMGUARD_ENABLED || 'true';
+const pmguard_enabled = process.env.PMGUARD_ENABLED || 'false';
 
 module.exports = { TG_BOT_TOKEN , TG_OWNER_ID , REMOVE_BG_API, HEROKU_API_KEY, HEROKU_APP_NAME, DB_URL, pmguard_enabled}
