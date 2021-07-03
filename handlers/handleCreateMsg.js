@@ -8,6 +8,7 @@ const {mute, unmute} = require('../modules/utils');
 const pmguard = require('../modules/pmguard');
 const config = require('../config');
 const parseText = require('../modules/ocr');
+var genQr = require("../modules/qr");
 
 const isImage = (msg) => msg.type == 'image' || (msg.type === 'document' && (msg.body.endsWith('.jpg') || msg.body.endsWith('.jpeg') || msg.body.endsWith('.png'))) ? true : false;
 
@@ -104,6 +105,17 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
                 const text = await parseText(img.data);
                 quotedMsg.reply(text); 
             }else{ quotedMsg.reply('Please reply to an image.')}
+        }else if(msg.body.startsWith('!qr')){
+            msg.delete(true);
+            if(msg.hasQuotedMsg){
+                const quotedMsg = await getQuotedMessage();
+                if(quotedMsg.type != 'chat'){ quotedMsg.reply('Please reply to any text generate QrCode.') }
+                else {
+                    quotedMsg.reply(new MessageMedia('image/png', (await genQr(quotedMsg.body)).qr, 'qr.png'), null)
+                } 
+            }else{ 
+                client.sendMessage(msg.to, new MessageMedia('image/png', (await genQr(msg.body.replace('!qr ', ''))).qr, 'qr.png'), {caption: 'Qr Code for \n\n```'+msg.body.replace('!qr ', '')+'```'})
+            }   
         }
         else if(msg.body.startsWith('!help')) {
             msg.delete(true);
