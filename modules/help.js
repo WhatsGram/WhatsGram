@@ -10,6 +10,7 @@ const modulesList = [
     {name: 'setvar', desc: 'Set env var to heroku.', usage: `*Set Var - !setvar*\n\nSet env var if bot hosted on heroku.\n\n*!setvar -n varname -v varvalue*`},
     {name: 'short', desc: 'Short your URLs using is.gd', usage: `*Short URL - !short*\n\nconvert long URls into short URLs using is.gd\n\n*!short {URL}*`},
     {name: 'sticker', desc: 'Convert image to sticker.', usage: `*Sticker - !sticker*\n\nConvert image to sticker.\n\n*!sticker - reply to image*`},
+    {name: 'telegraph', desc: 'Get direct link for media upto 5mb.', usage: `*Telegraph - !telegraph*\n\nUpload media to https://telegra.ph upto 5mb.\n\n*!telegraph* - reply to image or video.`},
     {name: 'unmute', desc: 'Unmute chat.', usage: `*UnMute - !unmute*\n\nUnmute current chat.\n\n*!unmute*`},
     {name: 'update', desc: 'Update userbot to latest version.', usage: `*Update - !update*\n\nUpdate your userbot to latest version if hosted on heroku.\n\n*!update*`}
 ]

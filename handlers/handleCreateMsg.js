@@ -9,6 +9,7 @@ const pmguard = require('../modules/pmguard');
 const config = require('../config');
 const parseText = require('../modules/ocr');
 var genQr = require("../modules/qr");
+var telegraph = require("../modules/telegraph");
 
 const isImage = (msg) => msg.type == 'image' || (msg.type === 'document' && (msg.body.endsWith('.jpg') || msg.body.endsWith('.jpeg') || msg.body.endsWith('.png'))) ? true : false;
 
@@ -116,7 +117,15 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             }else{ 
                 client.sendMessage(msg.to, new MessageMedia('image/png', (await genQr(msg.body.replace('!qr ', ''))).qr, 'qr.png'), {caption: 'Qr Code for \n\n```'+msg.body.replace('!qr ', '')+'```'})
             }   
-        }else if(msg.body.startsWith('!help')) {
+        }else if(msg.body.startsWith('!telegraph') && msg.hasQuotedMsg){
+            msg.delete(true);
+            const quotedMsg = await msg.getQuotedMessage();
+            const data = await quotedMsg.downloadMedia();
+            const res = await telegraph(data);
+            if(res.status){ quotedMsg.reply(`🔗 *Here is direct link* \n\n👉 ${'```' + res.url}` + '```') }
+            else{ quotedMsg.reply('```An error has been occurred while uploading. Make sure you passed correct file.```') }
+        }
+        else if(msg.body.startsWith('!help')) {
             msg.delete(true);
             const helpMsg = await help.waHelp(msg.body);
             client.sendMessage(msg.to , helpMsg);
