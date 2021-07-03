@@ -108,7 +108,7 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
         }else if(msg.body.startsWith('!qr')){
             msg.delete(true);
             if(msg.hasQuotedMsg){
-                const quotedMsg = await getQuotedMessage();
+                const quotedMsg = await msg.getQuotedMessage();
                 if(quotedMsg.type != 'chat'){ quotedMsg.reply('Please reply to any text generate QrCode.') }
                 else {
                     quotedMsg.reply(new MessageMedia('image/png', (await genQr(quotedMsg.body)).qr, 'qr.png'), null)
@@ -116,8 +116,7 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             }else{ 
                 client.sendMessage(msg.to, new MessageMedia('image/png', (await genQr(msg.body.replace('!qr ', ''))).qr, 'qr.png'), {caption: 'Qr Code for \n\n```'+msg.body.replace('!qr ', '')+'```'})
             }   
-        }
-        else if(msg.body.startsWith('!help')) {
+        }else if(msg.body.startsWith('!help')) {
             msg.delete(true);
             const helpMsg = await help.waHelp(msg.body);
             client.sendMessage(msg.to , helpMsg);
