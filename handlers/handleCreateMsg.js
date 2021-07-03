@@ -6,7 +6,11 @@ const {updateHerokuApp , restartDyno, setHerokuVar} = require("../modules/heroku
 const help = require("../modules/help");
 const {mute, unmute} = require('../modules/utils');
 const pmguard = require('../modules/pmguard');
-const config = require('../config')
+const config = require('../config');
+const parseText = require('../modules/ocr');
+
+const isImage = (msg) => msg.type == 'image' || (msg.type === 'document' && (msg.body.endsWith('.jpg') || msg.body.endsWith('.jpeg') || msg.body.endsWith('.png'))) ? true : false;
+
 const handleCreateMsg = async (msg , client , MessageMedia) => {
     if(msg.fromMe) {
         if (msg.body == "!allow" && config.pmguard_enabled == "true" && !msg.to.includes("-")) { // allow and unmute the chat (PMPermit module)
@@ -57,8 +61,7 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
         }else if (msg.body === '!sticker' && msg.hasQuotedMsg){
             msg.delete(true);
             const quotedMessage = await msg.getQuotedMessage();
-            const docConditions = quotedMessage.type === 'document' && (quotedMessage.body.endsWith('.jpg') || quotedMessage.body.endsWith('.jpeg') || quotedMessage.body.endsWith('.png'));
-            if(quotedMessage.hasMedia && (quotedMessage.type === 'image' || docConditions)){
+            if(quotedMessage.hasMedia && isImage(quotedMessage)){
                 const stickerData = await quotedMessage.downloadMedia();
                 const sticker = await new MessageMedia(stickerData.mimetype , stickerData.data);
                 quotedMessage.reply(sticker , null , {sendMediaAsSticker:true});
@@ -72,8 +75,7 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             client.sendMessage(msg.to , request.message);
         }else if(msg.body.startsWith('!removebg') && msg.hasQuotedMsg){
             const quotedMessage = await msg.getQuotedMessage();
-            const docConditions = quotedMessage.type === 'document' && (quotedMessage.body.endsWith('.jpg') || quotedMessage.body.endsWith('.jpeg') || quotedMessage.body.endsWith('.png'));
-            if(quotedMessage.hasMedia && (quotedMessage.type === 'image' || docConditions)){
+            if(quotedMessage.hasMedia && isImage(quotedMessage)){
                 msg.delete(true);
                 msg.reply('Processing....')
                 const img = await quotedMessage.downloadMedia();
@@ -94,6 +96,14 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
                 const quotedMsg = await msg.getQuotedMessage();
                 quotedMsg.fromMe ? quotedMsg.delete(true) : msg.reply('*Error:* Can\'t delete that message.')
             }else msg.reply('*Error:* Reply to a message to delete it.')
+        }else if(msg.body.startsWith('!ocr') && msg.hasQuotedMsg){
+            msg.delete(true);
+            const quotedMsg = await msg.getQuotedMessage();
+            if(quotedMsg.hasMedia && isImage(quotedMsg)){
+                const img = await quotedMsg.downloadMedia();
+                const text = await parseText(img.data);
+                quotedMsg.reply(text); 
+            }else{ quotedMsg.reply('Please reply to an image.')}
         }
         else if(msg.body.startsWith('!help')) {
             msg.delete(true);

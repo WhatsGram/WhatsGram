@@ -17,14 +17,18 @@ const handleMessage = async (message , TG_OWNER_ID , tgbot, client) => {
     const chat = await message.getChat();
     const contact = await message.getContact(); 
     let name = contact.name || contact.pushname;
-    
+
     if (message.author == undefined && config.pmguard_enabled == "true") { // Pm check for pmpermit module
         var checkPerm = await pmguard.handlePm(message.from.split("@")[0], name);
         if (checkPerm == "allowed") {
             
         } else if (checkPerm.action == true && chat.isMuted == false) { // mute 
             message.reply(checkPerm.msg);
-            config.PMGUARD_ACTION == 'block' ? await contact.block() : await chat.mute(new Date(1656824338000));
+            if(config.PMGUARD_ACTION == 'block') { await contact.block() }
+            else{
+                const d = new Date();
+                await chat.mute(new Date(d.getFullYear() +1, d.getMonth(), d.getDate()));
+            }
         } else if (chat.isMuted == true) {
             
         } else if (checkPerm == "error") {
