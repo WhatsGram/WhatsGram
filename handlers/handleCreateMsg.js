@@ -109,7 +109,7 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             msg.delete(true);
             if(msg.hasQuotedMsg){
                 const quotedMsg = await msg.getQuotedMessage();
-                if(quotedMsg.type != 'chat'){ quotedMsg.reply('Please reply to any text generate QrCode.') }
+                if(quotedMsg.type != 'chat'){ quotedMsg.reply('Please reply to any text to generate QrCode.') }
                 else {
                     quotedMsg.reply(new MessageMedia('image/png', (await genQr(quotedMsg.body)).qr, 'qr.png'), null)
                 } 
