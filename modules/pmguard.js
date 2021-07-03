@@ -168,15 +168,15 @@ async function handlePm(id, user) {
             return "error"
         } else {
             return {
-                mute: false,
-                msg: pmMsg ? pmMsg.msg.replace(/\{name}/gi, user).replace(/\{wanrs}/gi, read.msgCount ? read.msgCount : 0) + '\n\nPowered by *WhatsGram*' : `Hello, *${user}*!\nMy Master is Busy As Of Now, You Can Wait For Sometime.\nIf He Needs To Talk To You, He Will Approve You!\nAnd do not spam else you will be blocked.\n\nPowered by *WhatsGram*`
+                action: false,
+                msg: pmMsg ? pmMsg.msg.replace(/\{name}/gi, user).replace(/\{wanrs}/gi, read.msgCount ? read.msgCount : 0) + '\n\nPowered by *WhatsGram*' : `Hello, *${user}*!\nMy Master is Busy As Of Now, You Can Wait For Sometime.\nIf He Needs To Talk To You, He Will Approve You!\nAnd do not spam else you will be muted/blocked.\n\nPowered by *WhatsGram*`
             }
         }
     } else if (read.status == "found" && read.allowed == false) { 
         if (read.msgCount == 4) {
             return {
-                mute: true,
-                msg: `You have been automatically muted for for spamming.`
+                action: true,
+                msg: `You have been automatically ${config.PMGUARD_ACTION == 'mute' ? 'muted' : 'blcked'} for spamming.`
             }
         } else { 
             var update = await updateData(id, Number(read.msgCount) + 1)
@@ -184,8 +184,8 @@ async function handlePm(id, user) {
                 return "error"
             } else {
                 return {
-                    mute: false,
-                    msg: pmMsg ? pmMsg.msg.replace(/\{name}/gi, user).replace(/\{warns}/gi, read.msgCount ? read.msgCount : 0) + '\n\nPowered by *WhatsGram*' :  `Hello, *${user}*!\nMy Master is Busy As Of Now, You Can Wait For Sometime.\nIf He Needs To Talk To You, He Will Approve You!\nYou Have *${read.msgCount}/4 Of Warns*. And do not spam else you will be blocked.\n\nPowered by *WhatsGram*`
+                    action: false,
+                    msg: pmMsg ? pmMsg.msg.replace(/\{name}/gi, user).replace(/\{warns}/gi, read.msgCount ? read.msgCount : 0) + '\n\nPowered by *WhatsGram*' :  `Hello, *${user}*!\nMy Master is Busy As Of Now, You Can Wait For Sometime.\nIf He Needs To Talk To You, He Will Approve You!\nYou Have *${read.msgCount}/3 Of Warns*. And do not spam else you will be muted/blocked.\n\nPowered by *WhatsGram*`
                 }
             }
         }
