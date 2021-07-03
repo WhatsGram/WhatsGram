@@ -44,6 +44,14 @@
       "description": "Heroku API key. Get it from https://dashboard.heroku.com/account",
       "value": "",
       "required": true
+    },
+    "DB_URL":{
+      "description": "Mongo db database URL. Get it from https://cloud.mongodb.com",
+      "value": ""
+    },
+    "PMGUARD_ENABLED":{
+      "description": "Put true to enable Pm Guard. default is false",
+      "value": "false"
     }
   },
   "addons": []

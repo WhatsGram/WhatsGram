@@ -4,14 +4,15 @@ const axios = require('axios');
 const fs = require('fs');
 
 const getMediaInfo = (msg) => {
-  const mediaType = msg.photo ? 'photo' : msg.video ? 'video' : msg.audio ? 'audio' : msg.voice ? 'voice' : 'document'; 
+  const mediaType = msg.photo ? 'photo' : msg.video ? 'video' : msg.audio ? 'audio' : msg.voice ? 'voice' : msg.sticker && !msg.sticker.is_animated ? 'sticker' : 'document'; 
   const mediaObj = msg[mediaType];
-  const [type, mimeType, SAD, fileName, fileId, caption, SAV] = [mediaType,mediaObj.mime_type,false,null,mediaObj.file_id?mediaObj.file_id:mediaObj[0].file_id,msg.caption?msg.caption:'',mediaType=='voice'];
+  const [type, mimeType, SAD, fileName, fileId, caption, SAV] = [mediaType,mediaObj.mime_type ? mediaObj.mime_type : '',false,null,mediaObj.file_id?mediaObj.file_id:mediaObj[0].file_id,msg.caption?msg.caption:'',mediaType=='voice'];
   switch (mediaType) {
     case 'photo': return {type, mimeType: 'image/png', SAD, fileName, fileId, caption,SAV}; break;
     case 'video': return {type, mimeType, SAD, fileName, fileId, caption, SAV}; break;
     case 'audio': return {type, mimeType, SAD, fileName, fileId, caption, SAV}; break;
     case 'voice': return {type, mimeType, SAD, fileName, fileId, caption, SAV}; break;
+    case 'sticker': return {type, mimeType: 'image/webp', SAD, fileName, fileId, caption, SAV, SAS:true }; break;
     default: return {type, mimeType, SAD: true, fileName: mediaObj.file_name ? mediaObj.file_name : null, fileId, caption, SAV}; break;
   }
 }
@@ -23,7 +24,7 @@ const handleTgBot = async (ctx , client , MessageMedia) => {
       const fileInfo = await ctx.telegram.getFile(mediaInfo.fileId);
       const base64Data = await Buffer.from(((await axios.get(`https://api.telegram.org/file/bot${TG_BOT_TOKEN}/${fileInfo.file_path}`, { responseType: 'arraybuffer' })).data)).toString('base64');
       const fileData = new MessageMedia(mediaInfo.mimeType, base64Data , mediaInfo.fileName);
-      client.sendMessage(chatId, fileData, { quotedMessageId: msgId ? msgId : null, sendMediaAsDocument: mediaInfo.SAD, sendAudioAsVoice:mediaInfo.SAV, caption:mediaInfo.caption });
+      client.sendMessage(chatId, fileData, { quotedMessageId: msgId ? msgId : null, sendMediaAsDocument: mediaInfo.SAD, sendAudioAsVoice:mediaInfo.SAV, caption:mediaInfo.caption ,sendMediaAsSticker:mediaInfo.SAS});
     }else{
       const message = msg.text.startsWith('/send') ? msg.text.split(chatId.split('@')[0])[1].trim() : msg.text;
       client.sendMessage(chatId, message, { quotedMessageId: msgId ? msgId : null });
