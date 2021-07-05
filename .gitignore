@@ -3,3 +3,4 @@ session.json
 data.json
 .env
 temp/
+package-lock.json
