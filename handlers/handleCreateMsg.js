@@ -8,7 +8,7 @@ const {mute, unmute} = require('../modules/utils');
 const pmguard = require('../modules/pmguard');
 const config = require('../config');
 const parseText = require('../modules/ocr');
-var genQr = require("../modules/qr");
+var {genQr, readQr} = require("../modules/qr");
 var telegraph = require("../modules/telegraph");
 
 const isImage = (msg) => msg.type == 'image' || (msg.type === 'document' && (msg.body.endsWith('.jpg') || msg.body.endsWith('.jpeg') || msg.body.endsWith('.png'))) ? true : false;
@@ -117,6 +117,15 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             }else{ 
                 client.sendMessage(msg.to, new MessageMedia('image/png', (await genQr(msg.body.replace('!qr ', ''))).qr, 'qr.png'), {caption: 'Qr Code for \n\n```'+msg.body.replace('!qr ', '')+'```'})
             }   
+        }else if(msg.body.startsWith('!readqr') && msg.hasQuotedMsg){
+            msg.delete(true);
+            const quotedMsg = await msg.getQuotedMessage();
+            if(quotedMsg.hasMedia && isImage(quotedMsg)){
+                const qrImg = await quotedMsg.downloadMedia();
+                const result = await readQr(qrImg);
+                if(result.status){ quotedMsg.reply('This is what we got from QR\n\n```' + result.data + '```') }
+                else{ quotedMsg.reply('*Error:* Failed to read QR. Make sure you\'ve passed correct qr.') }
+            }
         }else if(msg.body.startsWith('!telegraph') && msg.hasQuotedMsg){
             msg.delete(true);
             const quotedMsg = await msg.getQuotedMessage();
