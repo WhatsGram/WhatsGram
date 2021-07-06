@@ -8,8 +8,9 @@ const {mute, unmute} = require('../modules/utils');
 const pmguard = require('../modules/pmguard');
 const config = require('../config');
 const parseText = require('../modules/ocr');
-var {genQr, readQr} = require("../modules/qr");
-var telegraph = require("../modules/telegraph");
+const {genQr, readQr} = require("../modules/qr");
+const telegraph = require("../modules/telegraph");
+const {getYtAudio, getYtVideo, getYtDownloadUrl} = require("../modules/youtube");
 
 const isImage = (msg) => msg.type == 'image' || (msg.type === 'document' && (msg.body.endsWith('.jpg') || msg.body.endsWith('.jpeg') || msg.body.endsWith('.png'))) ? true : false;
 
@@ -133,6 +134,43 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             const res = await telegraph(data);
             if(res.status){ quotedMsg.reply(`🔗 *Here is direct link* \n\n👉 ${'```' + res.url}` + '```') }
             else{ quotedMsg.reply('```An error has been occurred while uploading. Make sure you passed correct file.```') }
+        }else if(msg.body.startsWith('!yturl')){
+            msg.delete(true);
+            let url;
+            if(msg.hasQuotedMsg){
+                const quotedMsg = await msg.getQuotedMessage();
+                url = quotedMsg.body;
+            }else { url = msg.body.replace('!yturl ', '') }
+            const data = await getYtDownloadUrl(url);
+            client.sendMessage(msg.to, data.msg);
+        }else if(msg.body.startsWith('!yta')){
+            msg.delete(true);
+            let url;
+            if(msg.hasQuotedMsg){
+                const quotedMsg = await msg.getQuotedMessage();
+                url = quotedMsg.body;
+            }else { url = msg.body.replace('!yta ', '') }
+            const data = await getYtAudio(url);
+            client.sendMessage(msg.to, 'Downloading....');
+            if(data.status == true){
+                client.sendMessage(msg.to, new MessageMedia('audio/mpeg' ,data.audio, `${data.name}.mp3`));
+            }else{
+                client.sendMessage(msg.to, data.msg);
+            }
+        }else if(msg.body.startsWith('!yt')){
+            msg.delete(true);
+            let url;
+            if(msg.hasQuotedMsg){
+                const quotedMsg = await msg.getQuotedMessage();
+                url = quotedMsg.body;
+            }else { url = msg.body.replace('!yt ', '') }
+            const data = await getYtVideo(url);
+            client.sendMessage(msg.to, 'Downloading....');
+            if(data.status == true){
+                client.sendMessage(msg.to, new MessageMedia('video/mkv' ,data.video, `${data.name}.mkv`), {sendMediaAsDocument: true});
+            }else{
+                client.sendMessage(msg.to, data.msg);
+            }
         }
         else if(msg.body.startsWith('!help')) {
             msg.delete(true);

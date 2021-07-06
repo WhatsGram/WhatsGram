@@ -12,7 +12,9 @@ const modulesList = [
     {name: 'sticker', desc: 'Convert image to sticker.', usage: `*Sticker - !sticker*\n\nConvert image to sticker.\n\n*!sticker - reply to image*`},
     {name: 'telegraph', desc: 'Get direct link for media upto 5mb.', usage: `*Telegraph - !telegraph*\n\nUpload media to https://telegra.ph upto 5mb.\n\n*!telegraph* - reply to image or video.`},
     {name: 'unmute', desc: 'Unmute chat.', usage: `*UnMute - !unmute*\n\nUnmute current chat.\n\n*!unmute*`},
-    {name: 'update', desc: 'Update userbot to latest version.', usage: `*Update - !update*\n\nUpdate your userbot to latest version if hosted on heroku.\n\n*!update*`}
+    {name: 'update', desc: 'Update userbot to latest version.', usage: `*Update - !update*\n\nUpdate your userbot to latest version if hosted on heroku.\n\n*!update*`},
+    {name: 'youtube', desc: 'Download youtube videos & audios upto 100MB.', usage: `*YouTube*\n\nDownload youtube videos & audios upto 100MB or get direct download links.\n\n*!yt [url]* or reply to message - Download yt videos.\n\n*!yta [url]* or reply to message - Download yt audios.\n\n*!yturl [url]* or reply to message - Get direct download links.`}
+
 ]
 
 const waHelp = async (text) => {
