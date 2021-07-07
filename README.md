@@ -54,4 +54,7 @@ _Send <code>!help</code> in Anywhere. Or read this [Command's Wiki](https://gith
 
 - [Channel](https://telegram.dog/asprojects)
 - [Support Group](https://telegram.dog/assupportchat)
-- Follow me on GitHub -- [https://github.com/AffanTheBest](https://github.com/AffanTheBest)
+- Follow me on GitHub -- [https://github.com/AffanTheBest](https://github.com/AffanTheBest)  
+
+  
+<a href="https://www.patreon.com/bePatron?u=58083759" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
