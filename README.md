@@ -16,7 +16,6 @@
 - Easily Deployable
 - Ban Free (Using Whatsapp Web)
 - Easy to Use
-- Directory Listing in Web Server
 - Terminal Included
 
 ### Pre Added Plugins :
