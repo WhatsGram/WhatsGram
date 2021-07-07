@@ -41,7 +41,7 @@ const getYtVideo = async(url) => {
         try{
             let d = data.find(x => 
                 parseInt(x.split('</a>')[0].split('<div class="text-shadow-1">')[1].split('</div>')[0].trim()) <= 720 && 
-                parseInt(x.split('</a>')[0].split('<div class="text-shadow-1">').pop().split('</div>')[0].trim()) <= 100
+                parseInt(x.split('</a>')[0].split('<div class="text-shadow-1">').pop().split('</div>')[0].trim()) <= 50
             ); 
             const size = d.split('<div class="text-shadow-1">').pop().split('</div>')[0].trim()
             const url = `https://www.yt-download.org/download/${id}/merged${d.split('</a>')[0].split('" ')[0]}`;
