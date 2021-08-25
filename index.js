@@ -32,6 +32,10 @@ if (process.env.SESSION_DATA) {
   console.log("Session data not. PLease fill it in heroku vars.");
 }
 
+// Set bot commands. 
+const cmd = (cmd, desc) => ({command: cmd, description: desc});
+tgbot.telegram.setMyCommands([cmd('start', 'Start bot.'), cmd('mar', 'Mark message as read.'), cmd('send', 'Ex: /send ph_no message'), cmd('update', 'Update UB.'), cmd('restart', 'Restart ub.')]);
+
 const client = new Client({
   session: sessionData,
   puppeteer: { headless: true, args: ["--no-sandbox"] },
