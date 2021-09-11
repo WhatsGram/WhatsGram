@@ -23,6 +23,8 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 
+RUN chmod -R o+rwx node_modules/puppeteer/.local-chromium
+
 # Bundle app source
 COPY . .
 
