@@ -41,7 +41,6 @@ Soon adding more!
 ###### Method 2:
 [![Deploy+on+Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/WhatsGram/WhatsGram&envs=DB_URL,PMGUARD_ENABLED,REMOVE_BG_API,TG_BOT_TOKEN,TG_OWNER_ID&DB_URLDesc=Create+A+Database+In+Mongodb+And+Get+URL.&PMGUARD_ENABLEDDesc=Put+true+to+enable+Pm+Guard.+Default+is+false.&REMOVE_BG_APIDesc=Remove.bg+API+key.+Get+it+from+https://remove.bg&TG_BOT_TOKENDesc=Get+Your+Bot+Token+From+@BotFather.&TG_OWNER_IDDesc=Your+telegram+ID.+Get+your+id+from+@userinfobot)
 
-[![Deploy+on+Railway](https://railway.app/button.svg)]
 Read the [wiki](https://github.com/WhatsGram/WhatsGram/wiki/Deploy-with-Heroku) before Deploy it with Heroku<br><br>
 
 ### Commands
