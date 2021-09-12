@@ -27,10 +27,10 @@ Soon adding more!
 
 ### Deploy :
 
-##### Heroku
+##### - Heroku
 [![Deploy with Heroku](https://www.herokucdn.com/deploy/button.svg "Deploy with Heroku")](https://heroku.com/deploy?template=https://github.com/WhatsGram/WhatsGram "Deploy with Heroku")<br>
 <!--- Deploy to Railway -->
-##### Railway
+##### - Railway
 ###### Method 1 (Recommended):
 - Fork this repo.
 - Now head towards https://railway.app/new, select Deploy from repo.
