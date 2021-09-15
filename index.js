@@ -80,7 +80,6 @@ if (!sessionData) { // Check session data
 }
 
 client.on("auth_failure" , reason => { // If failed to log in.
-  if(fs.existsSync('session.json')) fs.unlinkSync('session.json')
   const message = 'Failed to authenticate the client. Please fill env var again or generate session.json again. Generating session data again...';
   console.log(message);
   tgbot.telegram.sendMessage(config.TG_OWNER_ID , message ,
