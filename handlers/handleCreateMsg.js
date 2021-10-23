@@ -176,7 +176,7 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             const chat = await msg.getChat();
             if(chat.isGroup){
                 const ids = msg.body.replace('!add ', '').split(' ').map(num => num.replace(/[^0-9]/g, '') + '@c.us');
-                ids.length > 0 ? chat.addParticipants(ids) : client.reply('Please pass valid phone numbers.');
+                ids.length > 0 ? chat.addParticipants(ids) : client.reply('Please pass valid phone number to add.');
             }
         }
         else if(msg.body.startsWith('!help')) {
