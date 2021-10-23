@@ -10,6 +10,11 @@ const handleMessage = require("./handlers/handleMessage");
 const handleCreateMsg = require("./handlers/handleCreateMsg");
 const handleTgBot = require("./handlers/handleTgbot");
 const {setHerokuVar , errorMsg} = require("./modules/heroku");
+// const SESSION_FILE_PATH = './session.json';
+// let sessionCfg;
+// if (fs.existsSync(SESSION_FILE_PATH)) {
+//     sessionCfg = require(SESSION_FILE_PATH);
+// }
 
 const tgbot = new Telegraf(config.TG_BOT_TOKEN);
 
