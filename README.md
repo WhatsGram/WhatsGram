@@ -63,10 +63,10 @@ _Send <code>!help</code> in Anywhere. Or read this [Command's Wiki](https://gith
 ### License & Copyright :
 
 - This Project is [Apache-2.0](https://github.com/WhatsGram/WhatsGram/blob/main/LICENSE) Licensed
-- Copyright 2021 by [Siddiquee Affan](https://github.com/AffanTheBest)
+- Copyright 2021 by [Siddiquee Affan](https://github.com/siddiquiaffan)
 
 ### Connect :
 
 - [Channel](https://telegram.dog/asprojects)
 - [Support Group](https://telegram.dog/assupportchat)
-- Follow me on GitHub -- [https://github.com/AffanTheBest](https://github.com/AffanTheBest)
+- Follow me on GitHub -- [https://github.com/AffanTheBest](https://github.com/siddiquiaffan)
