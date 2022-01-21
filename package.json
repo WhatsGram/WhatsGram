@@ -1,13 +1,12 @@
 {
-  "name": "WA",
+  "name": "WhatsGram",
   "version": "1.0.0",
-  "description": "",
+  "description": "WhatsApp userbot with Telegram bot integration.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js --ignore temp/* --ignore *.json --ignore config.js"
   },
-  "keywords": [],
+  "keywords": ["WhatsApp", "Telegram", "bot", "userbot"],
   "author": "",
   "license": "ISC",
   "dependencies": {
