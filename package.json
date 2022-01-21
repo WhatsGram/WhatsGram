@@ -7,7 +7,7 @@
     "start": "nodemon index.js --ignore temp/* --ignore *.json --ignore config.js"
   },
   "keywords": ["WhatsApp", "Telegram", "bot", "userbot"],
-  "author": "",
+  "author": "siddiquiaffan",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
