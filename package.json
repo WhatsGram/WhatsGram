@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon index.js --ignore temp/* --ignore *.json --ignore config.js"
   },
-  "keywords": ["WhatsApp", "Telegram", "bot", "userbot"],
+  "keywords": ["WhatsApp", "Telegram", "bot"],
   "author": "siddiquiaffan",
   "license": "ISC",
   "dependencies": {
