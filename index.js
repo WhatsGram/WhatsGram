@@ -28,7 +28,7 @@ const saveSessionToDb = async () => {
         console.log(`Session folder compressed, adding to database...`);
         const mongo = await MongoClient.connect(config.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
         const session = fs.readFileSync('./session.zip').toString();
-        await mongo.db('WhatsGram').collection('session').updateOne({}, {$set: {session: 'session'}}, {upsert: true});
+        await mongo.db('WhatsGram').collection('session').updateOne({}, {$set: {session}}, {upsert: true});
         console.log(`Added to database, closing connection...`);
         await mongo.close();
       })   
