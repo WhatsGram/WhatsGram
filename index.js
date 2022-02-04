@@ -73,7 +73,7 @@ tgbot.telegram.setMyCommands([cmd('start', 'Start bot.'), cmd('mar', 'Mark messa
 
 const client = new Client({ // Create client.
   session: '/WWebJS',
-  puppeteer: { headless: false, args: ["--no-sandbox"] },
+  puppeteer: { headless: true, args: ["--no-sandbox"] },
 });
 
 async function generateQr() {
