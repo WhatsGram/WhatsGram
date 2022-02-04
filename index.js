@@ -51,6 +51,7 @@ const getSession = async () => {
         if (err) {
             console.log('Session data not found. Generating QR code.');
             // await client.initialize();
+            generateQr();
             return
         }
         fs.unlinkSync('./session.zip');
@@ -88,7 +89,7 @@ async function generateQr() {
       return 
     }, 90 * 1000);
   });
-  
+
   client.on("authenticated", (session) => { // Take action when user Authenticated successfully.
     console.log("Authenticated successfully.");
   });
