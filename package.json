@@ -21,7 +21,7 @@
     "telegraf": "^4.3.0",
     "telegram": "^1.6.11",
     "valid-url": "^1.0.9",
-    "whatsapp-web.js": "^1.12.6",
+    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#multidevice",
     "ws": "^7.4.6"
   }
 }
