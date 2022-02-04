@@ -13,6 +13,9 @@
     },
     {
       "url": "https://buildpack-registry.s3.amazonaws.com/buildpacks/jontewks/puppeteer.tgz"
+    },
+    {
+      "url": "https://github.com/janxb/heroku-zipped-app-buildpack.git"
     }
   ],
   "env": {
