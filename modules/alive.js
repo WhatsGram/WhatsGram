@@ -2,8 +2,7 @@
 const config = require('../config');
 const axios = require('axios');
 
-async function alive(battery, phoneInfo) {
-
+async function alive(phoneInfo) {
     return ({
         startMessage: `*WhatsGram* _(0.1.0)_\n\n*Device:* ${phoneInfo.device_manufacturer} ${phoneInfo.device_model}\n*WhatsApp Version:* ${phoneInfo.wa_version}\n\n*Official Github Repo 👇👇*\n` + "```https://github.com/WhatsGram/WhatsGram```",
         mimetype: "image/jpeg",

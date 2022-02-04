@@ -149,7 +149,7 @@ client.on("message", async (message) => { // Listen incoming WhatsApp messages a
 client.on('message_create' , async (msg) => { // Listen outgoing WhatsApp messages and take action
   if (msg.body == "!alive") { // Alive command
     msg.delete(true)
-    var aliveMsgData = await alive(await client.info.getBatteryStatus(), client.info.phone)
+    var aliveMsgData = await alive(client.info.phone)
     client.sendMessage(msg.to, new MessageMedia(aliveMsgData.mimetype, aliveMsgData.data, aliveMsgData.filename), { caption: aliveMsgData.startMessage })
   }else{
     handleCreateMsg(msg , client , MessageMedia);
