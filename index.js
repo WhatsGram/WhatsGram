@@ -19,7 +19,7 @@ const saveSessionToDb = async () => {
   if(fs.existsSync('./WWebJS')){
     try{
       console.log(`Session folder found, compressing...`);
-      exec(`zip -r ./session.zip ./WWebJS`, async (err, stdout, stderr) => {
+      exec(config.HEROKU_APP == 'true' ? '7z a "' + __dirname + '/session.zip" ' + __dirname + '/WWebJS' : `zip -r ./session.zip ./WWebJS`, async (err, stdout, stderr) => {
         if (err) {
             console.log(err);
             return;
@@ -47,10 +47,9 @@ const getSession = async () => {
     await mongo.close();
     if(session){
       fs.writeFileSync('./session.zip', session);
-      exec(`unzip ./session.zip`, async (err, stdout, stderr) => {
+      exec(config.HEROKU_APP == 'true' ? '7z x "' +  __dirname + '/session.zip' : `unzip ./session.zip`, async (err, stdout, stderr) => {
         if (err) {
             console.log('Session data not found. Generating QR code.');
-            // await client.initialize();
             generateQr();
             return
         }
