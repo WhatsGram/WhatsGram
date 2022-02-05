@@ -13,9 +13,6 @@
     },
     {
       "url": "https://buildpack-registry.s3.amazonaws.com/buildpacks/jontewks/puppeteer.tgz"
-    },
-    {
-      "url": "https://github.com/honicholas/blueport-7zip.git"
     }
   ],
   "env": {
