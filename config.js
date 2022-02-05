@@ -11,6 +11,6 @@ const DB_URL = process.env.DB_URL || '';
 const pmguard_enabled = process.env.PMGUARD_ENABLED || 'false';
 const PMGUARD_ACTION = process.env.PMGUARD_ACTION && (process.env.PMGUARD_ACTION == 'mute' || process.env.PMGUARD_ACTION == 'block') ? process.env.PMGUARD_ACTION : 'mute';
 const OCR_SPACE_API_KEY = process.env.OCR_SPACE_API_KEY || '';
-const HEROKU_APP = process.env.HEROKU_APP || 'false';
+const TG_CHANNEL_ID = process.env.TG_CHANNEL_ID || '';
 
-module.exports = { TG_BOT_TOKEN , TG_OWNER_ID , REMOVE_BG_API, HEROKU_API_KEY, HEROKU_APP_NAME, DB_URL, pmguard_enabled, PMGUARD_ACTION, OCR_SPACE_API_KEY, HEROKU_APP}
+module.exports = { TG_BOT_TOKEN , TG_OWNER_ID , REMOVE_BG_API, HEROKU_API_KEY, HEROKU_APP_NAME, DB_URL, pmguard_enabled, PMGUARD_ACTION, OCR_SPACE_API_KEY, HEROKU_APP, TG_CHANNEL_ID}
