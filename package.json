@@ -6,13 +6,18 @@
   "scripts": {
     "start": "nodemon index.js --ignore temp/* --ignore *.json --ignore config.js"
   },
-  "keywords": ["WhatsApp", "Telegram", "bot"],
+  "keywords": [
+    "WhatsApp",
+    "Telegram",
+    "bot"
+  ],
   "author": "siddiquiaffan",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
     "dotenv": "^8.6.0",
     "mongodb": "^3.6.9",
+    "node-7z": "^3.0.0",
     "nodemon": "^2.0.7",
     "ocr-space-api-wrapper": "^1.0.6",
     "qrcode": "^1.4.4",

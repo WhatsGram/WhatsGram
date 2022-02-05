@@ -1,3 +1,6 @@
+const axios = require('axios');
+const fs = require('fs');
+
 const mute = async (chatId, unmuteStr, client) => {
     let unmuteTime;
     if(unmuteStr == Infinity){
@@ -28,4 +31,16 @@ const unmute = async (chatId, client) => {
     }
 }
 
-module.exports = {mute, unmute}
+const download = async (url, fileName) => {
+    await axios.get(url, {responseType: "stream"} )  
+    .then(response => {  
+    
+        response.data.pipe(fs.createWriteStream(fileName));  
+    })  
+    .catch(error => {  
+        console.log(error);  
+    }); 
+    return 'success';
+};
+
+module.exports = {mute, unmute, download}

@@ -9,32 +9,33 @@ const alive = require('./modules/alive');
 const handleMessage = require("./handlers/handleMessage");
 const handleCreateMsg = require("./handlers/handleCreateMsg");
 const handleTgBot = require("./handlers/handleTgbot");
-const {setHerokuVar , errorMsg} = require("./modules/heroku");
+const {download} = require("./modules/utils");
 const MongoClient = require('mongodb').MongoClient;
-const {exec} = require('child_process');
+const SevenZip = require('node-7z');
 
+let status = 'pending';
 const tgbot = new Telegraf(config.TG_BOT_TOKEN);
 
 const saveSessionToDb = async () => {
   if(fs.existsSync('./WWebJS')){
     try{
       console.log(`Session folder found, compressing...`);
-      exec(config.HEROKU_APP == 'true' ? '7z a "' + __dirname + '/session.zip" "' + __dirname + '/WWebJS"' : `zip -r ./session.zip ./WWebJS`, async (err, stdout, stderr) => {
-        if (err) {
-            console.log(err);
-            return;
-        }
-        bot.telegram.sendDocument('1197065402', {source: './archieve.zip'});
-        console.log(`Session folder compressed, adding to database...`);
+      const zip = SevenZip.add('./session.zip', './WWebJS');
+      zip.on('end', async () => {
+        console.log(`Compressed successfully, uploading to telegram...`);
+        let sentMsg = await tgbot.telegram.sendDocument(config.TG_CHANNEL_ID, {source: './session.zip'});
+        console.log(`Saving msg id to database ...`);
         const mongo = await MongoClient.connect(config.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
-        const session = fs.readFileSync('./session.zip').toString();
-        await mongo.db('WhatsGram').collection('session').updateOne({}, {$set: {session}}, {upsert: true});
+        await mongo.db('WhatsGram').collection('session').updateOne({type: 'session'}, {$set: {sessionMsgId : sentMsg.message_id, sessionFileId: sentMsg.document.file_id}}, {upsert: true});
         console.log(`Added to database, closing connection...`);
         await mongo.close();
-      })   
+        fs.unlinkSync('./session.zip');
+      })
+      return
     }catch(err){
       console.log('Failed to save session to database');
       console.log(err);
+      return
     }
   }
 }
@@ -42,26 +43,31 @@ const saveSessionToDb = async () => {
 const getSession = async () => {
   try{
     const mongo = await MongoClient.connect(config.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
-    let session = await mongo.db('WhatsGram').collection('session').find().toArray();
-    session = session[0]?.session;
+    console.log(`Searching for session in database...`);
+    let session = await mongo.db('WhatsGram').collection('session').findOne({type: 'session'});
+    const { sessionFileId }= session;
     await mongo.close();
-    if(session){
-      fs.writeFileSync('./session.zip', session);
-      exec(config.HEROKU_APP == 'true' ? '7z x "' +  __dirname + '/session.zip"' : `unzip ./session.zip`, async (err, stdout, stderr) => {
-        if (err) {
-            console.log('Session data not found. Generating QR code.');
-            generateQr();
-            return
-        }
-        fs.unlinkSync('./session.zip');
-        await console.log("Session found in database, starting whatsapp session...");
-        // await client.initialize();
-        return
-      })
+    if(sessionFileId){
+      console.log(`Found session in database, downloading...`);
+      try{
+        const {href:url} = await tgbot.telegram.getFileLink(sessionFileId);
+        await download(url, './session.zip');
+        console.log(`Downloaded successfully, extracting...`);
+        const unzip = SevenZip.extractFull('./session.zip')
+        unzip.on('end', () => {
+          fs.unlinkSync('./session.zip');
+          console.log("Session found in database, starting whatsapp session...");
+          client.initialize() 
+        })
+       }catch(err){}
+    }else{
+      generateQr();
     }
     return
   }catch(err){
-
+    console.log("Failed to get session from database");
+    console.log(err);
+    return
   }
 }
 getSession();
@@ -72,7 +78,7 @@ tgbot.telegram.setMyCommands([cmd('start', 'Start bot.'), cmd('mar', 'Mark messa
 
 const client = new Client({ // Create client.
   session: '/WWebJS',
-  puppeteer: { headless: true, args: ["--no-sandbox"] },
+  puppeteer: { headless: false, args: ["--no-sandbox"] },
 });
 
 async function generateQr() {
@@ -110,7 +116,12 @@ client.on("ready", async () => { // Take actin when client is ready.
   const message = "Successfully logged in. Ready to rock!";
   console.log(message);
   tgbot.telegram.sendMessage( config.TG_OWNER_ID, message, {disable_notification: true});
-  await saveSessionToDb();
+  await client.destroy();
+  if(status !== 'saved'){
+    await saveSessionToDb();
+    status = 'saved';
+    await client.initialize();
+  }
   if (fs.existsSync("qr.png")) fs.unlinkSync("qr.png");
 });
 // Telegram Bot
@@ -160,4 +171,11 @@ client.on("disconnect", (issue) => {
 });
 
 tgbot.launch(); // Initialize Telegram Bot
-client.initialize(); // Initialize WhatsApp Client
+
+// (async () => {
+//   const sentMsg = await tgbot.telegram.sendDocument(config.TG_CHANNEL_ID, {source: 'session.json'});
+//   const msgId = sentMsg.message_id;
+//   const sessionFileId = sentMsg.document.file_id;
+//   const {href:url} = await tgbot.telegram.getFileLink(sessionFileId)
+//   console.log(url)
+// })()
