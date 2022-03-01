@@ -1,73 +1,74 @@
 const qrcode = require("qrcode-terminal");
 const fs = require("fs");
+var fse = require("fs-extra");
 require("dotenv").config();
 var QRCode = require("qrcode");
-const {Client , MessageMedia} = require("whatsapp-web.js");
+const {Client , MessageMedia, LocalAuth, ClientInfo} = require("whatsapp-web.js");
 const { Telegraf } = require("telegraf");
 const config = require("./config");
 const alive = require('./modules/alive');
 const handleMessage = require("./handlers/handleMessage");
 const handleCreateMsg = require("./handlers/handleCreateMsg");
 const handleTgBot = require("./handlers/handleTgbot");
-const {download} = require("./modules/utils");
-const MongoClient = require('mongodb').MongoClient;
-const SevenZip = require('node-7z');
+const extract = require('extract-zip')
+const { zip, COMPRESSION_LEVEL } = require('zip-a-folder');
+const { Deta } = require('deta'); 
+
+// Globals
+const deta = Deta(config.DETA_PROJECT_KEY);
+const whatsGramDrive = deta.Drive('WhatsGram');
 
 let status = 'pending';
 const tgbot = new Telegraf(config.TG_BOT_TOKEN);
+
+const client = new Client({ // Create client.
+  authStrategy: new LocalAuth({
+    dataPath: './WWebJS'
+  }),
+  puppeteer: { headless: false, args: ["--no-sandbox"] },
+});
 
 const saveSessionToDb = async () => {
   if(fs.existsSync('./WWebJS')){
     try{
       console.log(`Session folder found, compressing...`);
-      const zip = SevenZip.add('./session.zip', './WWebJS');
-      zip.on('end', async () => {
-        console.log(`Compressed successfully, uploading to telegram...`);
-        let sentMsg = await tgbot.telegram.sendDocument(config.TG_CHANNEL_ID, {source: './session.zip'});
-        console.log(`Saving msg id to database ...`);
-        const mongo = await MongoClient.connect(config.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
-        await mongo.db('WhatsGram').collection('session').updateOne({type: 'session'}, {$set: {sessionMsgId : sentMsg.message_id, sessionFileId: sentMsg.document.file_id}}, {upsert: true});
-        console.log(`Added to database, closing connection...`);
-        await mongo.close();
-        fs.unlinkSync('./session.zip');
-      })
-      return
+      await zip('./WWebJS', './session.zip', {compression: COMPRESSION_LEVEL.high});
+      console.log(`Compressed successfully, saving to db...`);
+      await whatsGramDrive.put('session.zip', {path: './session.zip'});
+      fs.unlinkSync('./session.zip');
+      console.log(`Saved to db successfully!`);
+      return true
     }catch(err){
       console.log('Failed to save session to database');
       console.log(err);
-      return
+      return false
     }
   }
 }
 
 const getSession = async () => {
   try{
-    const mongo = await MongoClient.connect(config.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
-    console.log(`Searching for session in database...`);
-    let session = await mongo.db('WhatsGram').collection('session').findOne({type: 'session'});
-    const { sessionFileId }= session;
-    await mongo.close();
-    if(sessionFileId){
-      console.log(`Found session in database, downloading...`);
-      try{
-        const {href:url} = await tgbot.telegram.getFileLink(sessionFileId);
-        await download(url, './session.zip');
-        console.log(`Downloaded successfully, extracting...`);
-        const unzip = SevenZip.extractFull('./session.zip')
-        unzip.on('end', () => {
-          fs.unlinkSync('./session.zip');
-          console.log("Session found in database, starting whatsapp session...");
-          client.initialize() 
-        })
-       }catch(err){}
-    }else{
-      generateQr();
+    if(!fs.existsSync('./WWebJS')){
+      console.log('Getting session from database...');
+      const result = await whatsGramDrive.get('session.zip');
+      if(result){
+        const buffer = await result.arrayBuffer();
+        fs.writeFileSync('./session.zip', Buffer.from(buffer));
+        await extract('./session.zip', { dir: __dirname +'/WWebJS' })
+        fs.unlinkSync('./session.zip');
+        console.log('Session retrieved successfully! Initiating session...');
+        return true
+      }
+      console.log('No session found in database. Re initiating session...');
+      return false
     }
-    return
+    return true
   }catch(err){
     console.log("Failed to get session from database");
     console.log(err);
-    return
+    return false
+  } finally{
+    client.initialize();
   }
 }
 getSession();
@@ -75,11 +76,6 @@ getSession();
 // Set bot commands. 
 const cmd = (cmd, desc) => ({command: cmd, description: desc});
 tgbot.telegram.setMyCommands([cmd('start', 'Start bot.'), cmd('mar', 'Mark message as read.'), cmd('send', 'Ex: /send ph_no message'), cmd('update', 'Update UB.'), cmd('restart', 'Restart ub.')]);
-
-const client = new Client({ // Create client.
-  session: '/WWebJS',
-  puppeteer: { headless: true, args: ["--no-sandbox"] },
-});
 
 async function generateQr() {
   client.on("qr", async (qr) => {
@@ -97,10 +93,12 @@ async function generateQr() {
 
   client.on("authenticated", (session) => { // Take action when user Authenticated successfully.
     console.log("Authenticated successfully.");
+    console.log(session); 
   });
+
   client.on("logout", () => { // Take action when user logout.
     console.log( "Looks like you've been logged out. Please generate session again." );
-    if (fs.existsSync("session.json")) fs.unlinkSync("session.json");
+    whatsGramDrive.delete('session.zip');
   });
 }
 
@@ -109,21 +107,28 @@ client.on("auth_failure" , reason => { // If failed to log in.
   console.log(message);
   tgbot.telegram.sendMessage(config.TG_OWNER_ID , message ,
     {disable_notification: true})
-  generateQr();
+  whatsGramDrive.delete('session.zip');
+  client.initialize();
 })
 
 client.on("ready", async () => { // Take actin when client is ready.
   const message = "Successfully logged in. Ready to rock!";
-  console.log(message);
-  tgbot.telegram.sendMessage( config.TG_OWNER_ID, message, {disable_notification: true});
-  await client.destroy();
-  if(status !== 'saved'){
-    await saveSessionToDb();
-    status = 'saved';
-    await client.initialize();
+  if(status != 'saved'){
+    // await client.destroy();
+    // await new Promise(resolve => setTimeout(resolve, 1000));
+    // await saveSessionToDb();
+    // await new Promise(resolve => setTimeout(resolve, 1000));
+    // status = 'saved';
+    // client.options.puppeteer.userDataDir = null;
+    // client.initialize();
+    return 
+  }else{
+    console.log(message);
+    tgbot.telegram.sendMessage( config.TG_OWNER_ID, message, {disable_notification: true});
+    if (fs.existsSync("qr.png")) fs.unlinkSync("qr.png");
   }
-  if (fs.existsSync("qr.png")) fs.unlinkSync("qr.png");
 });
+
 // Telegram Bot
 tgbot.start(ctx => ctx.replyWithMarkdown(`Hey **${ctx.message.from.first_name}**, Welcome! \nI can notify you about new messages of WhatsApp. \n\nPowered by [WhatsGram](https://github.com/WhatsGram/WhatsGram).`,
   {disable_web_page_preview: true,
@@ -159,7 +164,8 @@ client.on("message", async (message) => { // Listen incoming WhatsApp messages a
 client.on('message_create' , async (msg) => { // Listen outgoing WhatsApp messages and take action
   if (msg.body == "!alive") { // Alive command
     msg.delete(true)
-    var aliveMsgData = await alive(client.info.phone)
+    const info = new ClientInfo()
+    const aliveMsgData = await alive(info);
     client.sendMessage(msg.to, new MessageMedia(aliveMsgData.mimetype, aliveMsgData.data, aliveMsgData.filename), { caption: aliveMsgData.startMessage })
   }else{
     handleCreateMsg(msg , client , MessageMedia);
@@ -171,11 +177,3 @@ client.on("disconnect", (issue) => {
 });
 
 tgbot.launch(); // Initialize Telegram Bot
-
-// (async () => {
-//   const sentMsg = await tgbot.telegram.sendDocument(config.TG_CHANNEL_ID, {source: 'session.json'});
-//   const msgId = sentMsg.message_id;
-//   const sessionFileId = sentMsg.document.file_id;
-//   const {href:url} = await tgbot.telegram.getFileLink(sessionFileId)
-//   console.log(url)
-// })()

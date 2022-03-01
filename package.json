@@ -15,9 +15,10 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
+    "deta": "^1.0.2",
     "dotenv": "^8.6.0",
+    "extract-zip": "^2.0.1",
     "mongodb": "^3.6.9",
-    "node-7z": "^3.0.0",
     "nodemon": "^2.0.7",
     "ocr-space-api-wrapper": "^1.0.6",
     "qrcode": "^1.4.4",
@@ -26,7 +27,8 @@
     "telegraf": "^4.3.0",
     "telegram": "^1.6.11",
     "valid-url": "^1.0.9",
-    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#multidevice",
-    "ws": "^7.4.6"
+    "whatsapp-web.js": "^1.16.1",
+    "ws": "^7.4.6",
+    "zip-a-folder": "^1.1.3"
   }
 }
