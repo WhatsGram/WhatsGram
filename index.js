@@ -25,7 +25,7 @@ const client = new Client({ // Create client.
   authStrategy: new LocalAuth({
     dataPath: './WWebJS'
   }),
-  puppeteer: { headless: false, args: ["--no-sandbox"] },
+  puppeteer: { headless: true, args: ["--no-sandbox"] },
 });
 
 const saveSessionToDb = async () => {
