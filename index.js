@@ -114,13 +114,13 @@ client.on("auth_failure" , reason => { // If failed to log in.
 client.on("ready", async () => { // Take actin when client is ready.
   const message = "Successfully logged in. Ready to rock!";
   if(status != 'saved'){
-    // await client.destroy();
-    // await new Promise(resolve => setTimeout(resolve, 1000));
-    // await saveSessionToDb();
-    // await new Promise(resolve => setTimeout(resolve, 1000));
-    // status = 'saved';
-    // client.options.puppeteer.userDataDir = null;
-    // client.initialize();
+    await client.destroy();
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await saveSessionToDb();
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    status = 'saved';
+    client.options.puppeteer.userDataDir = null;
+    client.initialize();
     return 
   }else{
     console.log(message);
