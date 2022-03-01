@@ -1,6 +1,5 @@
 const qrcode = require("qrcode-terminal");
 const fs = require("fs");
-var fse = require("fs-extra");
 require("dotenv").config();
 var QRCode = require("qrcode");
 const {Client , MessageMedia, LocalAuth, ClientInfo} = require("whatsapp-web.js");
