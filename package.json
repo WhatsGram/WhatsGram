@@ -4,7 +4,7 @@
   "description": "WhatsApp userbot with Telegram bot integration.",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js --ignore temp/* --ignore *.json --ignore config.js"
+    "start": "nodemon index.js --ignore temp/* --ignore *.json --ignore config.js --ignore WWebJS/* --ignore sesson.*"
   },
   "keywords": [
     "WhatsApp",
