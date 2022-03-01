@@ -60,13 +60,15 @@ const getSession = async () => {
       }
       console.log('No session found in database. Re initiating session...');
       return false
+    }else{
+      console.log('Initiating session...')
     }
     return true
   }catch(err){
     console.log("Failed to get session from database");
     console.log(err);
     return false
-  } finally{
+  }finally{
     client.initialize();
   }
 }
@@ -76,30 +78,29 @@ getSession();
 const cmd = (cmd, desc) => ({command: cmd, description: desc});
 tgbot.telegram.setMyCommands([cmd('start', 'Start bot.'), cmd('mar', 'Mark message as read.'), cmd('send', 'Ex: /send ph_no message'), cmd('update', 'Update UB.'), cmd('restart', 'Restart ub.')]);
 
-async function generateQr() {
-  client.on("qr", async (qr) => {
-    await console.log("Kindly check your telegram bot for QR Code.");
-    await QRCode.toFile("qr.png", qr);
-    await tgbot.telegram.sendPhoto(
-      config.TG_OWNER_ID, { source: "qr.png" } , { caption: "Scan it in within 20 seconds...." }
-    );
-    await qrcode.generate(qr, { small: true });
-    setTimeout(() => {
-      console.log("Didn't found any response, exiting...");
-      return 
-    }, 90 * 1000);
-  });
+client.on("qr", async (qr) => {
+  await console.log("Kindly check your telegram bot for QR Code.");
+  await QRCode.toFile("qr.png", qr);
+  await tgbot.telegram.sendPhoto(
+    config.TG_OWNER_ID, { source: "qr.png" } , { caption: "Scan it in within 20 seconds...." }
+  );
+  await qrcode.generate(qr, { small: true });
+  setTimeout(() => {
+    console.log("Didn't found any response, exiting...");
+    return 
+  }, 90 * 1000);
+});
 
-  client.on("authenticated", (session) => { // Take action when user Authenticated successfully.
-    console.log("Authenticated successfully.");
-    console.log(session); 
-  });
+client.on("authenticated", (session) => { // Take action when user Authenticated successfully.
+  console.log("Authenticated successfully.");
+  if(fs.existsSync('qr.png')) fs.unlinkSync('qr.png');
+});
 
-  client.on("logout", () => { // Take action when user logout.
-    console.log( "Looks like you've been logged out. Please generate session again." );
-    whatsGramDrive.delete('session.zip');
-  });
-}
+client.on("logout", () => { // Take action when user logout.
+  console.log( "Looks like you've been logged out. Please generate session again." );
+  whatsGramDrive.delete('session.zip');
+});
+
 
 client.on("auth_failure" , reason => { // If failed to log in.
   const message = 'Failed to authenticate the client. Please fill env var again or generate session.json again. Generating session data again...';
