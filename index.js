@@ -26,6 +26,10 @@ const client = new Client({ // Create client.
   }),
   puppeteer: { headless: true, args: ["--no-sandbox"] },
 });
+const initClient = () => {
+  client.options.puppeteer.userDataDir = null;
+  return client.initialize();
+}
 
 const saveSessionToDb = async () => {
   if(fs.existsSync('./WWebJS')){
@@ -69,7 +73,7 @@ const getSession = async () => {
     console.log(err);
     return false
   }finally{
-    client.initialize();
+    initClient();
   }
 }
 getSession();
@@ -108,7 +112,7 @@ client.on("auth_failure" , reason => { // If failed to log in.
   tgbot.telegram.sendMessage(config.TG_OWNER_ID , message ,
     {disable_notification: true})
   whatsGramDrive.delete('session.zip');
-  client.initialize();
+  initClient();
 })
 
 client.on("ready", async () => { // Take actin when client is ready.
@@ -120,7 +124,7 @@ client.on("ready", async () => { // Take actin when client is ready.
     await new Promise(resolve => setTimeout(resolve, 1000));
     status = 'saved';
     client.options.puppeteer.userDataDir = null;
-    client.initialize();
+    initClient();
     return 
   }else{
     console.log(message);
@@ -148,7 +152,7 @@ const restart = async (ctx) => {
   if (ctx) await ctx.replyWithMarkdown('Restarting...', {disable_notification: true})
   else tgbot.telegram.sendMessage(config.TG_OWNER_ID, 'Restarting...', {disable_notification: true})
   await client.destroy();
-  await client.initialize();
+  await initClient();
 }
 tgbot.command('restart', ctx => restart(ctx)); // Restart WhatsApp Client using TG Bot.
 setInterval(() => restart(), 1000 * 60 * 60 * 12); // Auto restart WhatsApp client every 12 hours.
