@@ -80,7 +80,11 @@ getSession();
 
 // Set bot commands. 
 const cmd = (cmd, desc) => ({command: cmd, description: desc});
-tgbot.telegram.setMyCommands([cmd('start', 'Start bot.'), cmd('mar', 'Mark message as read.'), cmd('send', 'Ex: /send ph_no message'), cmd('update', 'Update UB.'), cmd('restart', 'Restart ub.')]);
+try{
+  tgbot.telegram.setMyCommands([cmd('start', 'Start bot.'), cmd('mar', 'Mark message as read.'), cmd('send', 'Ex: /send ph_no message'), cmd('update', 'Update UB.'), cmd('restart', 'Restart ub.')]);
+}catch(e){
+  console.error('Failed to set commands.');
+}
 
 client.on("qr", async (qr) => {
   await console.log("Kindly check your telegram bot for QR Code.");
