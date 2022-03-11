@@ -17,7 +17,7 @@ const { Deta } = require('deta');
 const deta = Deta(config.DETA_PROJECT_KEY);
 const whatsGramDrive = deta.Drive('WhatsGram');
 
-let status = 'pending';
+let [status, sessionInDb, qrCount] = ['pending', false, 0];
 const tgbot = new Telegraf(config.TG_BOT_TOKEN);
 
 const client = new Client({ // Create client.
@@ -40,6 +40,7 @@ const saveSessionToDb = async () => {
       await whatsGramDrive.put('session.zip', {path: './session.zip'});
       fs.unlinkSync('./session.zip');
       console.log(`Saved to db successfully!`);
+      sessionInDb = true;
       return true
     }catch(err){
       console.log('Failed to save session to database');
@@ -60,6 +61,7 @@ const getSession = async () => {
         await extract('./session.zip', { dir: __dirname +'/WWebJS' })
         fs.unlinkSync('./session.zip');
         console.log('Session retrieved successfully! Initiating session...');
+        sessionInDb = true;
         return true
       }
       console.log('No session found in database. Re initiating session...');
@@ -87,6 +89,7 @@ try{
 }
 
 client.on("qr", async (qr) => {
+  qrCount++;
   await console.log("Kindly check your telegram bot for QR Code.");
   await QRCode.toFile("qr.png", qr);
   await tgbot.telegram.sendPhoto(
@@ -121,7 +124,8 @@ client.on("auth_failure" , reason => { // If failed to log in.
 
 client.on("ready", async () => { // Take actin when client is ready.
   const message = "Successfully logged in. Ready to rock!";
-  if(status != 'saved'){
+  if(qrCount == 0 && sessionInDb) status = 'saved';
+  if(status != 'saved') {
     await client.destroy();
     await new Promise(resolve => setTimeout(resolve, 1000));
     await saveSessionToDb();
