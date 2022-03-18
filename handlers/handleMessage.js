@@ -5,7 +5,7 @@ const pmguard = require('../modules/pmguard');
 const config = require('../config')
 
 const handleMessage = async (message, TG_OWNER_ID, tgbot, client) => {
-
+    
     const getMediaInfo = (msg) => {
         switch (msg.type) {
             case 'image': return { fileName: 'image.png', tgFunc: tgbot.telegram.sendPhoto.bind(tgbot.telegram) }; break;
@@ -17,9 +17,11 @@ const handleMessage = async (message, TG_OWNER_ID, tgbot, client) => {
     }
 
     const chat = await message.getChat();
+    const chatName = chat.name || (await client.getChatById(message?.author)).name;
     const contact = await message.getContact();
     let name = contact.name || contact.pushname || message?._data?.notifyName;
-    const contactNumber = message.author?.split('@')[0] || message.from?.split('@')[0];
+    const contactNumber = message.author || message.from;
+    const msgId = message?.id?.id;
 
     if (message.author == undefined && config.pmguard_enabled == "true") { // Pm check for pmpermit module
         var checkPerm = await pmguard.handlePm(message.from.split("@")[0], name);
@@ -42,8 +44,8 @@ const handleMessage = async (message, TG_OWNER_ID, tgbot, client) => {
 
     }
 
-    const tgMessage = `${chat.isGroup ? `${chat.name} | <a href="https://wa.me/${contactNumber}?chat_id=${message.from.split("@")[0]}&message_id=${message.id.id}">${name}</a>`
-        : `<a href="https://wa.me/${contactNumber}?chat_id=${contactNumber}&message_id=${message.id.id}"><b>${chat.name}</b></a> ${message?.isStatus ? 'Added new status' : ''}`
+    const tgMessage = `${chat.isGroup ? `${chatName} | <a href="https://wa.me/${contactNumber}?chat_id=${message.from}&message_id=${msgId}">${name}</a>`
+        : `<a href="https://wa.me/${contactNumber}?chat_id=${contactNumber}&message_id=${msgId}"><b>${chatName}</b></a> ${message?.isStatus ? 'Added new status' : ''}`
         }. \n${message.body ? `\n${message.body}` : ""}`;
 
     if (message.hasMedia && !chat.isMuted) {
