@@ -41,10 +41,9 @@ const handleTgBot = async (ctx, client, MessageMedia) => {
         }
       }
       const url = new URL(url_string());
-      const getChatId = url.searchParams.get("chat_id");
-      const getWaMessageId = url.searchParams.get("message_id");
-      const waChatId = getChatId.includes("-") ? `${getChatId}@g.us` : `${getChatId}@c.us`;
-      const waMessageId = `false_${waChatId}_${getWaMessageId}`;
+      const waChatId = url.searchParams.get("chat_id");
+      let waMessageId = url.searchParams.get("message_id");
+      waMessageId = `false_${waChatId}_${getWaMessageId}`;
       return waChatId ? { waChatId, waMessageId } : null;
     }
     const tgResponse = msg => {
@@ -52,28 +51,40 @@ const handleTgBot = async (ctx, client, MessageMedia) => {
     }
   
     if (ctx.message.from.id == TG_OWNER_ID) {
+
       if (ctx.message.reply_to_message) {
+
         if (ctx.message.text === '/mar' && getIds().waChatId) {
           client.sendSeen(getIds().waChatId);
         } else if (ctx.message.text && ctx.message.text.startsWith('/send')) {
           const chatId = ctx.message.text.split(' ')[1].trim() + '@c.us';
           sendMsgToWa(ctx.message.reply_to_message, chatId).then(() => tgResponse('Message sent successfully.'));
         } else if (getIds().waChatId) {
-          sendMsgToWa(ctx.message, getIds().waChatId, getIds().waMessageId).then(() => tgResponse('Replied successfully.'));
+          const {waChatId, waMessageId} = getIds();
+          console.log(waChatId);
+          sendMsgToWa(ctx.message, waChatId, waMessageId).then(() => tgResponse('Replied successfully.'));
         }
+
       } else if (ctx.message.text.startsWith('/send')) {
+        
         const chatId = ctx.message.text.split(' ')[1].trim() + '@c.us';
         sendMsgToWa(ctx.message.reply_to_message ? ctx.message.reply_to_message : ctx.message, chatId);
-      } else if (ctx.message.text === '/update') {
+      
+      } 
+      else if (ctx.message.text === '/update') {
+        
         updateHerokuApp().then(result => {
           const message = `**${result.message}** ${result.status ? 'It may take some time so have patient.\n\n**Build Logs:** [CLICK HERE](' + result.build_logs + ')' : ''}`;
           ctx.reply(message, { parse_mode: "markdown", disable_web_page_preview: true, reply_to_message_id: ctx.update.message.message_id, allow_sending_without_reply: true });
         })
+
       } else if (ctx.message.text === '/restart') {
+        
         restartDyno().then(result => {
           const message = `**${result.message}**`;
           ctx.reply(message, { parse_mode: "markdown", disable_web_page_preview: true, reply_to_message_id: ctx.update.message.message_id, allow_sending_without_reply: true });
         })
+
       } else {
         ctx.reply("Reply to a message to send reply on WhatsApp");
       }
