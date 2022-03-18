@@ -32,8 +32,7 @@ const handleMessage = async (message, TG_OWNER_ID, tgbot, client) => {
             message.reply(checkPerm.msg);
             if (config.PMGUARD_ACTION == 'block') { await contact.block() }
             else {
-                const d = new Date();
-                await chat.mute(new Date(d.getFullYear() + 1, d.getMonth(), d.getDate()));
+                await chat.mute();
             }
         } else if (chat.isMuted == true) {
 
