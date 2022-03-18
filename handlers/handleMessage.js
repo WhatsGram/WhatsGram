@@ -20,7 +20,8 @@ const handleMessage = async (message, TG_OWNER_ID, tgbot, client) => {
     const chatName = chat.name || (await client.getChatById(message?.author)).name;
     const contact = await message.getContact();
     let name = contact.name || contact.pushname || message?._data?.notifyName;
-    const contactNumber = message.author || message.from;
+    const chatId = message.author || message.from; 
+    const contactNumber = chatId.split('@')[0];
     const msgId = message?.id?.id;
 
     if (message.author == undefined && config.pmguard_enabled == "true") { // Pm check for pmpermit module
@@ -44,8 +45,8 @@ const handleMessage = async (message, TG_OWNER_ID, tgbot, client) => {
 
     }
 
-    const tgMessage = `${chat.isGroup ? `${chatName} | <a href="https://wa.me/${contactNumber}?chat_id=${message.from}&message_id=${msgId}">${name}</a>`
-        : `<a href="https://wa.me/${contactNumber}?chat_id=${contactNumber}&message_id=${msgId}"><b>${chatName}</b></a> ${message?.isStatus ? 'Added new status' : ''}`
+    const tgMessage = `${chat.isGroup ? `${chatName} | <a href="https://wa.me/${contactNumber}?chat_id=${chatId}&message_id=${msgId}">${name}</a>`
+        : `<a href="https://wa.me/${contactNumber}?chat_id=${chatId}&message_id=${msgId}"><b>${chatName}</b></a> ${message?.isStatus ? 'Added new status' : ''}`
         }. \n${message.body ? `\n${message.body}` : ""}`;
 
     if (message.hasMedia && !chat.isMuted) {
