@@ -3,7 +3,7 @@
   <br>
 <b>WhatsGram</b>
 </h1>
-<h4 align="center">Yet another userbot for Whatsapp</h4>
+<h4 align="center">Yet another bot for Whatsapp</h4>
 <br>
 
 <br>
