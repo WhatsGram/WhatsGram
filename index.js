@@ -9,15 +9,9 @@ const alive = require('./modules/alive');
 const handleMessage = require("./handlers/handleMessage");
 const handleCreateMsg = require("./handlers/handleCreateMsg");
 const handleTgBot = require("./handlers/handleTgbot");
-const extract = require('extract-zip')
-const { zip, COMPRESSION_LEVEL } = require('zip-a-folder');
-const { Deta } = require('deta'); 
+const {saveSessionToDb, getSession} = require("./handlers/handleSession");
 
-// Globals
-const deta = Deta(config.DETA_PROJECT_KEY);
-const whatsGramDrive = deta.Drive('WhatsGram');
-
-let [status, sessionInDb, qrCount] = ['pending', false, 0];
+let [status, sessionInDb, qrCount] = ['saved', false, 0];
 const tgbot = new Telegraf(config.TG_BOT_TOKEN);
 
 const client = new Client({ // Create client.
@@ -31,54 +25,7 @@ const initClient = () => {
   return client.initialize();
 }
 
-const saveSessionToDb = async () => {
-  if(fs.existsSync('./WWebJS')){
-    try{
-      console.log(`Session folder found, compressing...`);
-      await zip('./WWebJS', './session.zip', {compression: COMPRESSION_LEVEL.high});
-      console.log(`Compressed successfully, saving to db...`);
-      await whatsGramDrive.put('session.zip', {path: './session.zip'});
-      fs.unlinkSync('./session.zip');
-      console.log(`Saved to db successfully!`);
-      sessionInDb = true;
-      return true
-    }catch(err){
-      console.log('Failed to save session to database');
-      console.log(err);
-      return false
-    }
-  }
-}
-
-const getSession = async () => {
-  try{
-    if(!fs.existsSync('./WWebJS')){
-      console.log('Getting session from database...');
-      const result = await whatsGramDrive.get('session.zip');
-      if(result){
-        const buffer = await result.arrayBuffer();
-        fs.writeFileSync('./session.zip', Buffer.from(buffer));
-        await extract('./session.zip', { dir: __dirname +'/WWebJS' })
-        fs.unlinkSync('./session.zip');
-        console.log('Session retrieved successfully! Initiating session...');
-        sessionInDb = true;
-        return true
-      }
-      console.log('No session found in database. Re initiating session...');
-      return false
-    }else{
-      console.log('Initiating session...')
-    }
-    return true
-  }catch(err){
-    console.log("Failed to get session from database");
-    console.log(err);
-    return false
-  }finally{
-    initClient();
-  }
-}
-getSession();
+getSession(initClient);
 
 // Set bot commands. 
 const cmd = (cmd, desc) => ({command: cmd, description: desc});

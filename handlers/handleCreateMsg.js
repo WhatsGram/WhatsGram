@@ -15,6 +15,8 @@ const {getYtAudio, getYtVideo, getYtDownloadUrl} = require("../modules/youtube")
 const isImage = (msg) => msg.type == 'image' || (msg.type === 'document' && (msg.body.endsWith('.jpg') || msg.body.endsWith('.jpeg') || msg.body.endsWith('.png'))) ? true : false;
 
 const handleCreateMsg = async (msg , client , MessageMedia) => {
+    const isCmd = (key) => msg.body.startsWith(key);
+
     if(msg.fromMe) {
         if (msg.body == "!allow" && config.pmguard_enabled == "true" && !msg.to.includes("-")) { // allow and unmute the chat (PMPermit module)
             msg.delete(true);
@@ -22,7 +24,7 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             var chat = await msg.getChat();
             await chat.unmute(true);
             msg.reply("Allowed to direct message!");
-        }else if(msg.body.startsWith('!setpmmsg') && !msg.to.includes("-")){
+        }else if(isCmd('!setpmmsg') && !msg.to.includes("-")){
             msg.delete(true);
             if(config.pmguard_enabled == "true"){
                 const pmMsg = msg.body.replace('!setpmmsg ', '');
@@ -32,18 +34,18 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             }else{
                 client.sendMessage(msg.to, '*Error:* Can\'t upadate message, PmGuard is disbaled.')
             }
-        }else if(msg.body.startsWith("!short ")){
+        }else if(isCmd("!short ")){
             msg.delete(true);
             short(msg.body.split('!short ')[1]).then(url => {
             client.sendMessage(msg.to, `${url.startsWith("https://") ? `Here is the shorten URL ${url}` : 'PLease send a valid url to short.'}`);
             })
-        }else if(msg.body.startsWith("!carbon ")){
+        }else if(isCmd("!carbon ")){
             msg.delete(true);
             genCarbon(msg.body.split('!carbon ')[1]).then(data => {
                 const carbon = new MessageMedia(data.mimetype , data.data);
                 client.sendMessage(msg.to , carbon);
             })
-        }else if(msg.body.startsWith('!term ')){
+        }else if(isCmd('!term ')){
            msg.delete(true);
             exec(msg.body.split('!term ')[1] , (data , error) => {
                 console.log(error);
@@ -71,12 +73,12 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             }else{
                 quotedMessage.reply('Reply to an image to get it converted into sticker!');
             }
-        }else if(msg.body.startsWith('!setvar ')){
+        }else if(isCmd('!setvar ')){
             msg.delete(true);
             const extractData = (a , b) => msg.body.split(a)[1].split(b)[0].trim();
             const request = await setHerokuVar(extractData('-n' , '-v') , extractData('-v' , '-n'));
             client.sendMessage(msg.to , request.message);
-        }else if(msg.body.startsWith('!removebg') && msg.hasQuotedMsg){
+        }else if(isCmd('!removebg') && msg.hasQuotedMsg){
             const quotedMessage = await msg.getQuotedMessage();
             if(quotedMessage.hasMedia && isImage(quotedMessage)){
                 msg.delete(true);
@@ -86,7 +88,7 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
                 const noBgImg = new MessageMedia('image/png' , result.img, 'NoBg@WhatsGram.png');
                 quotedMessage.reply(noBgImg, null, {sendMediaAsDocument: true});
             }else{ msg.reply('Please reply to an image file.') }
-        }else if(msg.body.startsWith('!mute') && !msg.to.includes('-')){
+        }else if(isCmd('!mute') && !msg.to.includes('-')){
             msg.delete(true);
             const unmuteTime = msg.body.split('!mute ')[1] == undefined ? Infinity :  msg.body.split('!mute ')[1];
             client.sendMessage(msg.to, (await mute(msg.to, unmuteTime, client)).msg);
@@ -99,7 +101,7 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
                 const quotedMsg = await msg.getQuotedMessage();
                 quotedMsg.fromMe ? quotedMsg.delete(true) : msg.reply('*Error:* Can\'t delete that message.')
             }else msg.reply('*Error:* Reply to a message to delete it.')
-        }else if(msg.body.startsWith('!ocr') && msg.hasQuotedMsg){
+        }else if(isCmd('!ocr') && msg.hasQuotedMsg){
             msg.delete(true);
             const quotedMsg = await msg.getQuotedMessage();
             if(quotedMsg.hasMedia && isImage(quotedMsg)){
@@ -107,7 +109,7 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
                 const text = await parseText(img.data);
                 quotedMsg.reply(text); 
             }else{ quotedMsg.reply('Please reply to an image.')}
-        }else if(msg.body.startsWith('!qr')){
+        }else if(isCmd('!qr')){
             msg.delete(true);
             if(msg.hasQuotedMsg){
                 const quotedMsg = await msg.getQuotedMessage();
@@ -118,7 +120,7 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             }else{ 
                 client.sendMessage(msg.to, new MessageMedia('image/png', (await genQr(msg.body.replace('!qr ', ''))).qr, 'qr.png'), {caption: 'Qr Code for \n\n```'+msg.body.replace('!qr ', '')+'```'})
             }   
-        }else if(msg.body.startsWith('!readqr') && msg.hasQuotedMsg){
+        }else if(isCmd('!readqr') && msg.hasQuotedMsg){
             msg.delete(true);
             const quotedMsg = await msg.getQuotedMessage();
             if(quotedMsg.hasMedia && isImage(quotedMsg)){
@@ -127,14 +129,14 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
                 if(result.status){ quotedMsg.reply('This is what we got from QR\n\n```' + result.data + '```') }
                 else{ quotedMsg.reply('*Error:* Failed to read QR. Make sure you\'ve passed correct qr.') }
             }
-        }else if(msg.body.startsWith('!telegraph') && msg.hasQuotedMsg){
+        }else if(isCmd('!telegraph') && msg.hasQuotedMsg){
             msg.delete(true);
             const quotedMsg = await msg.getQuotedMessage();
             const data = await quotedMsg.downloadMedia();
             const res = await telegraph(data);
             if(res.status){ quotedMsg.reply(`🔗 *Here is direct link* \n\n👉 ${'```' + res.url}` + '```') }
             else{ quotedMsg.reply('```An error has been occurred while uploading. Make sure you passed correct file.```') }
-        }else if(msg.body.startsWith('!yturl')){
+        }else if(isCmd('!yturl')){
             msg.delete(true);
             let url;
             if(msg.hasQuotedMsg){
@@ -143,7 +145,7 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             }else { url = msg.body.replace('!yturl ', '') }
             const data = await getYtDownloadUrl(url);
             client.sendMessage(msg.to, data.msg);
-        }else if(msg.body.startsWith('!yta')){
+        }else if(isCmd('!yta')){
             msg.delete(true);
             let url;
             if(msg.hasQuotedMsg){
@@ -157,7 +159,7 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
             }else{
                 client.sendMessage(msg.to, data.msg);
             }
-        }else if(msg.body.startsWith('!yt')){
+        }else if(isCmd('!yt')){
             msg.delete(true);
             let url;
             if(msg.hasQuotedMsg){
@@ -172,7 +174,7 @@ const handleCreateMsg = async (msg , client , MessageMedia) => {
                 client.sendMessage(msg.to, data.msg);
             }
         }
-        else if(msg.body.startsWith('!help')) {
+        else if(isCmd('!help')) {
             msg.delete(true);
             const helpMsg = await help.waHelp(msg.body);
             client.sendMessage(msg.to , helpMsg);
