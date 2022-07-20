@@ -27,7 +27,7 @@
     "telegraf": "^4.7.0",
     "telegram": "^1.6.11",
     "valid-url": "^1.0.9",
-    "whatsapp-web.js": "^1.16.4",
+    "whatsapp-web.js": "^1.17.1",
     "ws": "^7.4.6",
     "zip-a-folder": "^1.1.3"
   }
