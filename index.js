@@ -9,9 +9,9 @@ const alive = require('./modules/alive');
 const handleMessage = require("./handlers/handleMessage");
 const handleCreateMsg = require("./handlers/handleCreateMsg");
 const handleTgBot = require("./handlers/handleTgbot");
-const {saveSessionToDb, getSession} = require("./handlers/handleSession");
+const {saveSessionToDb, getSession, sessionInDb} = require("./handlers/handleSession");
 
-let [status, sessionInDb, qrCount] = ['saved', false, 0];
+let [status, qrCount] = ['pending', false, 0];
 const tgbot = new Telegraf(config.TG_BOT_TOKEN);
 
 const client = new Client({ // Create client.
@@ -71,13 +71,14 @@ client.on("auth_failure" , reason => { // If failed to log in.
 
 client.on("ready", async () => { // Take actin when client is ready.
   const message = "Successfully logged in. Ready to rock!";
-  if(qrCount == 0 && sessionInDb) status = 'saved';
+  if(qrCount == 0 && sessionInDb){
+    status = 'saved';
+    console.log('0 qr');
+  } 
   if(status != 'saved') {
     await client.destroy();
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    await saveSessionToDb();
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    status = 'saved';
+    await saveSessionToDb();status = 'saved';
+    console.log('Reinitiating client...');
     client.options.puppeteer.userDataDir = null;
     initClient();
     return 

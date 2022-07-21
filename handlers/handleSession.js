@@ -7,6 +7,7 @@ const { Deta } = require("deta");
 // Globals
 const deta = Deta(config.DETA_PROJECT_KEY);
 const whatsGramDrive = deta.Drive("WhatsGram");
+let sessionInDb = false;
 
 // Save session to database
 const saveSessionToDb = async () => {
@@ -60,4 +61,4 @@ const getSession = async (initClient) => {
   }
 };
 
-module.exports = { saveSessionToDb, getSession };
+module.exports = { saveSessionToDb, getSession, sessionInDb };
