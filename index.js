@@ -25,7 +25,7 @@ const initClient = () => {
   return client.initialize();
 }
 
-getSession(initClient);
+getSession(restart);
 
 // Set bot commands. 
 const cmd = (cmd, desc) => ({command: cmd, description: desc});
@@ -79,8 +79,7 @@ client.on("ready", async () => { // Take actin when client is ready.
     await client.destroy();
     await saveSessionToDb();status = 'saved';
     console.log('Reinitiating client...');
-    client.options.puppeteer.userDataDir = null;
-    initClient();
+    restart();
     return 
   }else{
     console.log(message);
