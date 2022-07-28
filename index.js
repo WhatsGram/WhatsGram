@@ -25,7 +25,7 @@ const initClient = () => {
   return client.initialize();
 }
 
-getSession(restart);
+getSession(initClient);
 
 // Set bot commands. 
 const cmd = (cmd, desc) => ({command: cmd, description: desc});
@@ -79,7 +79,8 @@ client.on("ready", async () => { // Take actin when client is ready.
     await client.destroy();
     await saveSessionToDb();status = 'saved';
     console.log('Reinitiating client...');
-    restart();
+    client.options.puppeteer.userDataDir = null;
+    await initClient();
     return 
   }else{
     console.log(message);
@@ -106,7 +107,6 @@ tgbot.command('donate', ctx => { // Donate Command
 async function restart (ctx) {
   if (ctx) await ctx.replyWithMarkdown('Restarting...', {disable_notification: true})
   else tgbot.telegram.sendMessage(config.TG_OWNER_ID, 'Restarting...', {disable_notification: true})
-  client.options.puppeteer.userDataDir = null;
   await client.destroy();
   await initClient();
 }
