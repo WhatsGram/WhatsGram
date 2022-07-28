@@ -3,6 +3,7 @@ const fs = require("fs");
 const extract = require("extract-zip");
 const { zip, COMPRESSION_LEVEL } = require("zip-a-folder");
 const { Deta } = require("deta");
+const path = require("path");
 
 // Globals
 const deta = Deta(config.DETA_PROJECT_KEY);
@@ -40,7 +41,9 @@ const getSession = async (restart) => {
       if (result) {
         const buffer = await result.arrayBuffer();
         fs.writeFileSync("./session.zip", Buffer.from(buffer));
-        await extract("./session.zip", { dir: __dirname + "/WWebJS" });
+        await extract("./session.zip", {
+          dir: path.join(__dirname, "../WWebJS"),
+        });
         fs.unlinkSync("./session.zip");
         console.log("Session retrieved successfully! Initiating session...");
         sessionInDb = true;
