@@ -13,7 +13,7 @@ let sessionInDb = false;
 // Save session to database
 const saveSessionToDb = async () => {
   if (fs.existsSync("./WWebJS")) {
-    try {x
+    try {
       console.log(`Session folder found, compressing...`);
       await zip("./WWebJS", "./session.zip", {
         compression: COMPRESSION_LEVEL.high,
