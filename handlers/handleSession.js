@@ -33,7 +33,7 @@ const saveSessionToDb = async () => {
 };
 
 // Get session from database
-const getSession = async (restart) => {
+const getSession = async (initClient) => {
   try {
     if (!fs.existsSync("./WWebJS")) {
       console.log("Getting session from database...");
@@ -60,7 +60,7 @@ const getSession = async (restart) => {
     console.log(err);
     return false;
   } finally {
-    restart();
+    initClient();
   }
 };
 
