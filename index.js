@@ -106,6 +106,7 @@ tgbot.command('donate', ctx => { // Donate Command
 async function restart (ctx) {
   if (ctx) await ctx.replyWithMarkdown('Restarting...', {disable_notification: true})
   else tgbot.telegram.sendMessage(config.TG_OWNER_ID, 'Restarting...', {disable_notification: true})
+  client.options.puppeteer.userDataDir = null;
   await client.destroy();
   await initClient();
 }
