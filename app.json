@@ -52,6 +52,12 @@
     "PMGUARD_ENABLED":{
       "description": "Put true to enable Pm Guard. default is false",
       "value": "false"
+    },
+    "DETA_PROJECT_KEY": {
+      "description": "Deta project key. Get it from https://deta.sh/",
+      "value": "",
+      "required": "true"
+      
     }
   },
   "formation": {
