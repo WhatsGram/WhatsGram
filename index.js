@@ -104,7 +104,7 @@ tgbot.command('donate', ctx => { // Donate Command
      inline_keyboard: [[{text: 'Ko-fi', url: 'https://ko-fi.com/affanthebest'}, {text: 'Paypal', url: 'https://paypal.me/affanthebest'}]]
   }})
 });
-const restart = async (ctx) => {
+async function restart (ctx) {
   if (ctx) await ctx.replyWithMarkdown('Restarting...', {disable_notification: true})
   else tgbot.telegram.sendMessage(config.TG_OWNER_ID, 'Restarting...', {disable_notification: true})
   await client.destroy();
