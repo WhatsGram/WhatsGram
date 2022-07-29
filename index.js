@@ -71,10 +71,7 @@ client.on("auth_failure" , reason => { // If failed to log in.
 
 client.on("ready", async () => { // Take actin when client is ready.
   const message = "Successfully logged in. Ready to rock!";
-  if(qrCount == 0 && sessionInDb){
-    status = 'saved';
-    console.log('0 qr');
-  } 
+  if(qrCount == 0 && sessionInDb) status = 'saved'; 
   if(status != 'saved') {
     await client.destroy();
     await saveSessionToDb();status = 'saved';
