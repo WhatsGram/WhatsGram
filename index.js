@@ -77,7 +77,8 @@ client.on("ready", async () => { // Take actin when client is ready.
     await saveSessionToDb();status = 'saved';
     console.log('Reinitiating client...');
     client.options.puppeteer.userDataDir = null;
-    await initClient();
+    // await initClient();
+    await restart();
     return 
   }else{
     console.log(message);
