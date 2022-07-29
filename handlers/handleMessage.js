@@ -49,17 +49,24 @@ const handleMessage = async (message, TG_OWNER_ID, tgbot, client) => {
         }. \n${message.body ? `\n${message.body}` : ""}`;
 
     if (message.hasMedia && !chat.isMuted) {
-        await message.downloadMedia().then(async (data) => {
-            const mediaInfo = await getMediaInfo(message);
-            const messageData = {
-                document: { source: path.join(__dirname, '../', mediaInfo.fileName) },
-                options: { caption: tgMessage, disable_web_page_preview: true, parse_mode: "HTML" }
-            }
-            fs.writeFile(mediaInfo.fileName, data.data, "base64", (err) =>
-                err ? console.error(err)
-                    : mediaInfo.tgFunc(TG_OWNER_ID, messageData.document, messageData.options)
-            );
-        });
+        try{
+            await message.downloadMedia().then(async (data) => {
+                const mediaInfo = await getMediaInfo(message);
+                const filePath = path.join( __dirname, '../' + mediaInfo.fileName );
+                const messageData = {
+                    document: { source: filePath },
+                    options: { caption: tgMessage, disable_web_page_preview: true, parse_mode: "HTML" }
+                }
+                fs.writeFile(mediaInfo.fileName, data.data, "base64", (err) =>
+                    err ? console.error(err)
+                        : mediaInfo.tgFunc(TG_OWNER_ID, messageData.document, messageData.options).then(
+                                () => fs.existsSync(filePath) ?  fs.unlinkSync( filePath ) : null
+                        )
+                );
+            });
+        }catch(e){
+            console.log(e)
+        }
     } else if (!message.from.includes("status") && !chat.isMuted) {
         tgbot.telegram.sendMessage(TG_OWNER_ID, tgMessage,
             { parse_mode: "HTML", disable_web_page_preview: true, disable_notification: chat.isMuted });
