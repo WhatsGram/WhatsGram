@@ -58,7 +58,6 @@ const handleMessage = async (message, TG_OWNER_ID, tgbot, client) => {
             fs.writeFile(mediaInfo.fileName, data.data, "base64", (err) =>
                 err ? console.error(err)
                     : mediaInfo.tgFunc(TG_OWNER_ID, messageData.document, messageData.options)
-                        .then(() => { fs.unlinkSync(path.join(__dirname, '../', mediaInfo.fileName)) })
             );
         });
     } else if (!message.from.includes("status") && !chat.isMuted) {
