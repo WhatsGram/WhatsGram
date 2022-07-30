@@ -74,11 +74,7 @@ client.on("ready", async () => { // Take actin when client is ready.
   if(qrCount == 0 && sessionInDb) status = 'saved'; 
   if(status != 'saved') {
     await client.destroy();
-    await saveSessionToDb();status = 'saved';
-    console.log('Reinitiating client...');
-    client.options.puppeteer.userDataDir = null;
-    // await initClient();
-    await restart();
+    await saveSessionToDb(restart);status = 'saved';
     return 
   }else{
     console.log(message);
@@ -105,7 +101,8 @@ tgbot.command('donate', ctx => { // Donate Command
 async function restart (ctx) {
   if (ctx) await ctx.replyWithMarkdown('Restarting...', {disable_notification: true})
   else tgbot.telegram.sendMessage(config.TG_OWNER_ID, 'Restarting...', {disable_notification: true})
-  await client.destroy();
+  client.options.puppeteer.userDataDir = null;
+  await client?.destroy() || null;
   await initClient();
 }
 tgbot.command('restart', ctx => restart(ctx)); // Restart WhatsApp Client using TG Bot.
