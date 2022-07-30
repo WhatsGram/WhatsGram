@@ -11,7 +11,7 @@ const whatsGramDrive = deta.Drive("WhatsGram");
 let sessionInDb = false;
 
 // Save session to database
-const saveSessionToDb = async () => {
+const saveSessionToDb = async (restart) => {
   if (fs.existsSync("./WWebJS")) {
     try {
       console.log(`Session folder found, compressing...`);
@@ -28,6 +28,9 @@ const saveSessionToDb = async () => {
       console.log("Failed to save session to database");
       console.log(err);
       return false;
+    }finally{
+      console.log("Reinitiating client...");
+      restart();
     }
   }
 };
