@@ -14,13 +14,20 @@ const {saveSessionToDb, getSession, sessionInDb} = require("./handlers/handleSes
 let [status, qrCount] = ['pending', false, 0];
 const tgbot = new Telegraf(config.TG_BOT_TOKEN);
 
-const client = new Client({ // Create client.
+let client = new Client({ // Create client.
   authStrategy: new LocalAuth({
     dataPath: './WWebJS'
   }),
   puppeteer: { headless: true, args: ["--no-sandbox"] },
 });
 const initClient = () => {
+  client = new Client({
+    // Create client.
+    authStrategy: new LocalAuth({
+      dataPath: "./WWebJS",
+    }),
+    puppeteer: { headless: false, args: ["--no-sandbox"] },
+  }); 
   client.options.puppeteer.userDataDir = null;
   return client.initialize();
 }
