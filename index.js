@@ -26,7 +26,7 @@ const initClient = () => {
     authStrategy: new LocalAuth({
       dataPath: "./WWebJS",
     }),
-    puppeteer: { headless: false, args: ["--no-sandbox"] },
+    puppeteer: { headless: true, args: ["--no-sandbox"] },
   }); 
   client.options.puppeteer.userDataDir = null;
   return client.initialize();
