@@ -20,7 +20,6 @@ let client = new Client({ // Create client.
   puppeteer: { headless: true, args: ["--no-sandbox"] },
 });
 const initClient = () => {
-  console.log('Initializing ------------------')
   client = new Client({
     // Create client.
     authStrategy: new LocalAuth({
@@ -28,7 +27,7 @@ const initClient = () => {
     }),
     puppeteer: { headless: true, args: ["--no-sandbox"] },
   }); 
-  // client.options.puppeteer.userDataDir = null;
+  client.options.puppeteer.userDataDir = null;
   return client.initialize();
 }
 
