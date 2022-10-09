@@ -11,7 +11,6 @@ const handleCreateMsg = require("./handlers/handleCreateMsg");
 const handleTgBot = require("./handlers/handleTgbot");
 const {saveSessionToDb, getSession, sessionInDb} = require("./handlers/handleSession");
 
-let [status, qrCount] = ['pending', false, 0];
 const tgbot = new Telegraf(config.TG_BOT_TOKEN);
 
 let client = new Client({ // Create client.
@@ -21,6 +20,7 @@ let client = new Client({ // Create client.
   puppeteer: { headless: true, args: ["--no-sandbox"] },
 });
 const initClient = () => {
+  console.log('Initializing ------------------')
   client = new Client({
     // Create client.
     authStrategy: new LocalAuth({
@@ -28,7 +28,7 @@ const initClient = () => {
     }),
     puppeteer: { headless: true, args: ["--no-sandbox"] },
   }); 
-  client.options.puppeteer.userDataDir = null;
+  // client.options.puppeteer.userDataDir = null;
   return client.initialize();
 }
 
@@ -44,16 +44,12 @@ try{
 
 client.on("qr", async (qr) => {
   qrCount++;
-  await console.log("Kindly check your telegram bot for QR Code.");
+  console.log("Kindly check your telegram bot for QR Code.");
   await QRCode.toFile("qr.png", qr);
   await tgbot.telegram.sendPhoto(
     config.TG_OWNER_ID, { source: "qr.png" } , { caption: "Scan it in within 20 seconds...." }
   );
   await qrcode.generate(qr, { small: true });
-  setTimeout(() => {
-    console.log("Didn't found any response, exiting...");
-    return 
-  }, 90 * 1000);
 });
 
 client.on("authenticated", (session) => { // Take action when user Authenticated successfully.
@@ -78,16 +74,10 @@ client.on("auth_failure" , reason => { // If failed to log in.
 
 client.on("ready", async () => { // Take actin when client is ready.
   const message = "Successfully logged in. Ready to rock!";
-  if(qrCount == 0 && sessionInDb) status = 'saved'; 
-  if(status != 'saved') {
-    await client.destroy();
-    await saveSessionToDb(restart);status = 'saved';
-    return 
-  }else{
-    console.log(message);
-    tgbot.telegram.sendMessage( config.TG_OWNER_ID, message, {disable_notification: true});
-    if (fs.existsSync("qr.png")) fs.unlinkSync("qr.png");
-  }
+  console.log(message);
+  tgbot.telegram.sendMessage( config.TG_OWNER_ID, message, {disable_notification: true});
+  if (fs.existsSync("qr.png")) fs.unlinkSync("qr.png");
+  await saveSessionToDb();
 });
 
 // Telegram Bot
