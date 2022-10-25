@@ -43,7 +43,7 @@ const handleTgBot = async (ctx, client, MessageMedia) => {
       const url = new URL(url_string());
       const waChatId = url.searchParams.get("chat_id");
       let waMessageId = url.searchParams.get("message_id");
-      waMessageId = `false_${waChatId}_${getWaMessageId}`;
+      waMessageId = `false_${waChatId}_${waMessageId}`;
       return waChatId ? { waChatId, waMessageId } : null;
     }
     const tgResponse = msg => {
