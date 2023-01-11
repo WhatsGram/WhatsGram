@@ -9,18 +9,24 @@ const alive = require('./modules/alive');
 const handleMessage = require("./handlers/handleMessage");
 const handleCreateMsg = require("./handlers/handleCreateMsg");
 const handleTgBot = require("./handlers/handleTgbot");
-const {saveSessionToDb, getSession} = require("./handlers/handleSession");
+const {saveSessionToDb, getSession, sessionInDb} = require("./handlers/handleSession");
 
-let [status, sessionInDb, qrCount] = ['saved', false, 0];
 const tgbot = new Telegraf(config.TG_BOT_TOKEN);
 
-const client = new Client({ // Create client.
+let client = new Client({ // Create client.
   authStrategy: new LocalAuth({
     dataPath: './WWebJS'
   }),
   puppeteer: { headless: true, args: ["--no-sandbox"] },
 });
 const initClient = () => {
+  client = new Client({
+    // Create client.
+    authStrategy: new LocalAuth({
+      dataPath: "./WWebJS",
+    }),
+    puppeteer: { headless: true, args: ["--no-sandbox"] },
+  }); 
   client.options.puppeteer.userDataDir = null;
   return client.initialize();
 }
@@ -37,16 +43,12 @@ try{
 
 client.on("qr", async (qr) => {
   qrCount++;
-  await console.log("Kindly check your telegram bot for QR Code.");
+  console.log("Kindly check your telegram bot for QR Code.");
   await QRCode.toFile("qr.png", qr);
   await tgbot.telegram.sendPhoto(
     config.TG_OWNER_ID, { source: "qr.png" } , { caption: "Scan it in within 20 seconds...." }
   );
   await qrcode.generate(qr, { small: true });
-  setTimeout(() => {
-    console.log("Didn't found any response, exiting...");
-    return 
-  }, 90 * 1000);
 });
 
 client.on("authenticated", (session) => { // Take action when user Authenticated successfully.
@@ -71,21 +73,10 @@ client.on("auth_failure" , reason => { // If failed to log in.
 
 client.on("ready", async () => { // Take actin when client is ready.
   const message = "Successfully logged in. Ready to rock!";
-  if(qrCount == 0 && sessionInDb) status = 'saved';
-  if(status != 'saved') {
-    await client.destroy();
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    await saveSessionToDb();
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    status = 'saved';
-    client.options.puppeteer.userDataDir = null;
-    initClient();
-    return 
-  }else{
-    console.log(message);
-    tgbot.telegram.sendMessage( config.TG_OWNER_ID, message, {disable_notification: true});
-    if (fs.existsSync("qr.png")) fs.unlinkSync("qr.png");
-  }
+  console.log(message);
+  tgbot.telegram.sendMessage( config.TG_OWNER_ID, message, {disable_notification: true});
+  if (fs.existsSync("qr.png")) fs.unlinkSync("qr.png");
+  await saveSessionToDb();
 });
 
 // Telegram Bot
@@ -103,10 +94,11 @@ tgbot.command('donate', ctx => { // Donate Command
      inline_keyboard: [[{text: 'Ko-fi', url: 'https://ko-fi.com/affanthebest'}, {text: 'Paypal', url: 'https://paypal.me/affanthebest'}]]
   }})
 });
-const restart = async (ctx) => {
+async function restart (ctx) {
   if (ctx) await ctx.replyWithMarkdown('Restarting...', {disable_notification: true})
   else tgbot.telegram.sendMessage(config.TG_OWNER_ID, 'Restarting...', {disable_notification: true})
-  await client.destroy();
+  client.options.puppeteer.userDataDir = null;
+  await client?.destroy() || null;
   await initClient();
 }
 tgbot.command('restart', ctx => restart(ctx)); // Restart WhatsApp Client using TG Bot.

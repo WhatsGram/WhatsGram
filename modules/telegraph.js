@@ -11,6 +11,7 @@ const telegraph = async (data) => {
         const res = await axios.post('https://telegra.ph/upload', media, {headers});
         return {status: true, url: `https://telegra.ph${res.data[0].src}`}
     }catch(e){
+        console.log(e)
         return {status: false}
     }
 }

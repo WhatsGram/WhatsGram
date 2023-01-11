@@ -1,7 +1,7 @@
 {
   "name": "WhatsGram",
-  "description": "Yet another userbot for WhatsApp.",
-  "keywords": ["WhatsApp", "Telegram", "Userbot", "NodeJs"],
+  "description": "Yet another bot for WhatsApp.",
+  "keywords": ["WhatsApp", "Telegram", "NodeJs"],
   "repository": "https://github.com/WhatsGram/WhatsGram",
   "website": "https://t.me/AffanTheBest",
   "scripts": {
@@ -52,6 +52,12 @@
     "PMGUARD_ENABLED":{
       "description": "Put true to enable Pm Guard. default is false",
       "value": "false"
+    },
+    "DETA_PROJECT_KEY": {
+      "description": "Deta project key. Get it from https://deta.sh/",
+      "value": "",
+      "required": "true"
+      
     }
   },
   "formation": {

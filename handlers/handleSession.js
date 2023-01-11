@@ -3,28 +3,35 @@ const fs = require("fs");
 const extract = require("extract-zip");
 const { zip, COMPRESSION_LEVEL } = require("zip-a-folder");
 const { Deta } = require("deta");
+const path = require("path");
+const fse = require("fs-extra");
 
 // Globals
 const deta = Deta(config.DETA_PROJECT_KEY);
 const whatsGramDrive = deta.Drive("WhatsGram");
+let sessionInDb = false;
+const { log } = console;
 
 // Save session to database
 const saveSessionToDb = async () => {
   if (fs.existsSync("./WWebJS")) {
     try {
-      console.log(`Session folder found, compressing...`);
-      await zip("./WWebJS", "./session.zip", {
+      log("Saving session to DB... \nCopying session folder...");
+      fse.copySync("./WWebJS", "./WWebJS-Copy", { overwrite: true });
+      log(`Compressing...`);
+      await zip("./WWebJS-Copy", "./session.zip", {
         compression: COMPRESSION_LEVEL.high,
       });
-      console.log(`Compressed successfully, saving to db...`);
+      log(`Compressed successfully, saving to db...`);
       await whatsGramDrive.put("session.zip", { path: "./session.zip" });
       fs.unlinkSync("./session.zip");
-      console.log(`Saved to db successfully!`);
+      log(`Saved to db successfully!`);
       sessionInDb = true;
+      fse.removeSync("./WWebJS-Copy");
       return true;
     } catch (err) {
-      console.log("Failed to save session to database");
-      console.log(err);
+      log("Failed to save session to database");
+      log(err);
       return false;
     }
   }
@@ -34,30 +41,32 @@ const saveSessionToDb = async () => {
 const getSession = async (initClient) => {
   try {
     if (!fs.existsSync("./WWebJS")) {
-      console.log("Getting session from database...");
+      log("Getting session from database...");
       const result = await whatsGramDrive.get("session.zip");
       if (result) {
         const buffer = await result.arrayBuffer();
         fs.writeFileSync("./session.zip", Buffer.from(buffer));
-        await extract("./session.zip", { dir: __dirname + "/WWebJS" });
+        await extract("./session.zip", {
+          dir: path.join(__dirname, "../WWebJS"),
+        });
         fs.unlinkSync("./session.zip");
-        console.log("Session retrieved successfully! Initiating session...");
+        log("Session retrieved successfully! Initiating session...");
         sessionInDb = true;
+        await new Promise((res) => setTimeout(res, 2000));
+        initClient();
         return true;
       }
-      console.log("No session found in database. Re initiating session...");
+      log("No session found in database. Re initiating session...");
       return false;
     } else {
-      console.log("Initiating session...");
+      log("Initiating session...");
     }
     return true;
   } catch (err) {
-    console.log("Failed to get session from database");
-    console.log(err);
+    log("Failed to get session from database");
+    log(err);
     return false;
-  } finally {
-    initClient();
   }
 };
 
-module.exports = { saveSessionToDb, getSession };
+module.exports = { saveSessionToDb, getSession, sessionInDb };
