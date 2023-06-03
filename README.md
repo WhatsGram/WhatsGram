@@ -27,10 +27,25 @@ Soon adding more!
 
 ### Deploy :
 
+##### - Heroku
 [![Deploy with Heroku](https://www.herokucdn.com/deploy/button.svg "Deploy with Heroku")](https://heroku.com/deploy?template=https://github.com/WhatsGram/WhatsGram "Deploy with Heroku")<br>
+<!--- Deploy to Railway -->
+##### - Railway
+###### Method 1 (Recommended):
+- Fork this repo.
+- Now head towards https://railway.app/new, select Deploy from repo.
+- Now select the forked repository, select branch.
+- Now go to <b>Variables</b> and add variable listed below.
+   - DB_URL, PMGUARD_ENABLED, REMOVE_BG_API, TG_BOT_TOKEN, TG_OWNER_ID
+- Go to <b>Deployments</b> and for deplyment to complete.
+- Now you'll get qr code on tg bot, scan it and you're good to go.
+ 
+###### Method 2:
+[![Deploy+on+Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/WhatsGram/WhatsGram&envs=DB_URL,PMGUARD_ENABLED,REMOVE_BG_API,TG_BOT_TOKEN,TG_OWNER_ID&DB_URLDesc=Create+A+Database+In+Mongodb+And+Get+URL.&PMGUARD_ENABLEDDesc=Put+true+to+enable+Pm+Guard.+Default+is+false.&REMOVE_BG_APIDesc=Remove.bg+API+key.+Get+it+from+https://remove.bg&TG_BOT_TOKENDesc=Get+Your+Bot+Token+From+@BotFather.&TG_OWNER_IDDesc=Your+telegram+ID.+Get+your+id+from+@userinfobot)
+
 Read the [wiki](https://github.com/WhatsGram/WhatsGram/wiki/Deploy-with-Heroku) before Deploy it with Heroku<br><br>
 
-### Commands :
+### Commands
 
 _Send <code>!help</code> in Anywhere. Or read this [Command's Wiki](https://github.com/WhatsGram/WhatsGram/wiki/Commands "Command's Wiki")_
 
@@ -48,10 +63,10 @@ _Send <code>!help</code> in Anywhere. Or read this [Command's Wiki](https://gith
 ### License & Copyright :
 
 - This Project is [Apache-2.0](https://github.com/WhatsGram/WhatsGram/blob/main/LICENSE) Licensed
-- Copyright 2021 by [Siddiquee Affan](https://github.com/AffanTheBest)
+- Copyright 2021 by [Siddiquee Affan](https://github.com/siddiquiaffan)
 
 ### Connect :
 
 - [Channel](https://telegram.dog/asprojects)
 - [Support Group](https://telegram.dog/assupportchat)
-- Follow me on GitHub -- [https://github.com/AffanTheBest](https://github.com/AffanTheBest)
+- Follow me on GitHub -- [https://github.com/AffanTheBest](https://github.com/siddiquiaffan)

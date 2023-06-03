@@ -1,4 +1,4 @@
-const { MessageMedia } = require('whatsapp-web.js');
+const {exec} = require('child_process');
 const fs = require('fs');
 var path = require('path');
 const pmguard = require('../modules/pmguard');
@@ -17,6 +17,7 @@ const handleMessage = async (message, TG_OWNER_ID, tgbot, client) => {
 
     const chat = await message.getChat();
     const contact = await message.getContact();
+
     let name = contact.name || contact.pushname;
 
     if (message.author == undefined && config.pmguard_enabled == "true") { // Pm check for pmpermit module
@@ -40,28 +41,37 @@ const handleMessage = async (message, TG_OWNER_ID, tgbot, client) => {
 
     }
 
-    const tgMessage = `${chat.isGroup ? `${chat.name} | <a href="https://wa.me/${message.author.split("@")[0]}?chat_id=${message.from.split("@")[0]}&message_id=${message.id.id}">${name}</a>`
+    const tgMessage = `${chat.isGroup ? `[GRP] ${chat.name} | <a href="https://wa.me/${message.author.split("@")[0]}?chat_id=${message.from.split("@")[0]}&message_id=${message.id.id}">${name}</a>`
         : `<a href="https://wa.me/${message.from.split("@")[0]}?chat_id=${message.from.split("@")[0]}&message_id=${message.id.id}"><b>${chat.name}</b></a>`
         }. \n${message.body ? `\n${message.body}` : ""}`;
 
-    if (message.hasMedia && !chat.isMuted) {
+    if (message.hasMedia) {
         await message.downloadMedia().then(async (data) => {
             const mediaInfo = await getMediaInfo(message);
             const messageData = {
                 document: { source: path.join(__dirname, '../', mediaInfo.fileName) },
                 options: { caption: tgMessage, disable_web_page_preview: true, parse_mode: "HTML" }
             }
-            fs.writeFile(mediaInfo.fileName, data.data, "base64", (err) =>
+            try {
+                fs.writeFile(mediaInfo.fileName, data.data, "base64", (err) =>
                 err ? console.error(err)
                     : mediaInfo.tgFunc(TG_OWNER_ID, messageData.document, messageData.options)
-                        .then(() => { fs.unlinkSync(path.join(__dirname, '../', mediaInfo.fileName)) })
+                        .then(() => { exec('rm '+path.join(__dirname, '../', mediaInfo.fileName), (data, err) => 
+                                          { if(err) console.log(err); }) })
             );
+            } catch (error) {
+                console.log(error);
+            }
         });
     } else if (!message.from.includes("status") && !chat.isMuted) {
         tgbot.telegram.sendMessage(TG_OWNER_ID, tgMessage,
             { parse_mode: "HTML", disable_web_page_preview: true, disable_notification: chat.isMuted });
     }
 
+    
+    if(config.AUTO_REPLY_CHAT != '' && !message.hasMedia && message.from.split('@')[0] == config.AUTO_REPLY_CHAT) {
+        message.reply(message.body);
+    }
 }
 
 // const handleMessage = async (message , TG_OWNER_ID , tgbot) => {

@@ -1,0 +1,11 @@
+# Spacefile Docs: https://go.deta.dev/docs/spacefile/v0
+v: 0
+micros:
+  - name: WhatsGram
+    src: ./
+    engine: nodejs16
+    primary: true
+    run: npm node-prune
+    public_routes:
+     - /*
+     - /*/*

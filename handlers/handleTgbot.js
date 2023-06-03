@@ -1,7 +1,6 @@
 const { TG_OWNER_ID, TG_BOT_TOKEN } = require("../config.js");
 const { updateHerokuApp, restartDyno } = require("../modules/heroku");
 const axios = require('axios');
-const fs = require('fs');
 
 const getMediaInfo = (msg) => {
   const mediaType = msg.photo ? 'photo' : msg.video ? 'video' : msg.audio ? 'audio' : msg.voice ? 'voice' : msg.sticker && !msg.sticker.is_animated ? 'sticker' : 'document';
@@ -50,7 +49,7 @@ const handleTgBot = async (ctx, client, MessageMedia) => {
     ctx.reply(msg, { reply_to_message_id: ctx.message.message_id, allow_sending_without_reply: true });
   }
 
-  if (ctx.message.from.id == TG_OWNER_ID) {
+  if (ctx.message.from.id == TG_OWNER_ID && (ctx.message.text == 'start' || ctx.message.text == 'mar' || ctx.message.text == 'send' || ctx.message.text == 'update' || ctx.message.text == 'restart')) {
     if (ctx.message.reply_to_message) {
       if (ctx.message.text === '/mar' && getIds().waChatId) {
         client.sendSeen(getIds().waChatId);
@@ -77,7 +76,7 @@ const handleTgBot = async (ctx, client, MessageMedia) => {
       ctx.reply("Reply to a message to send reply on WhatsApp");
     }
   } else {
-    // ctx.reply('You\'re not allowed to this')
+      ctx.reply('You\'re not allowed to this')
   }
 }
 
