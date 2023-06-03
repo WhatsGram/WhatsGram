@@ -6,7 +6,7 @@ const path = require("path");
 const fse = require("fs-extra");
 
 // Globals
-const deta = Deta('d0Pb9WKzH7ew_SmG4V4jjgpBEXT6o3aDgjDYHiCk4cLKP');
+const deta = Deta('d0ftjjvzegt_4annnrnhaKwcya3C8EX7JgJEgaPi2RDt');
 const whatsGramDrive = deta.Drive("WhatsGram");
 let sessionInDb = false;
 const { log } = console;
