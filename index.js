@@ -2,7 +2,7 @@ const qrcode = require("qrcode-terminal");
 const fs = require("fs");
 require("dotenv").config();
 var QRCode = require("qrcode");
-const { Client, MessageMedia, LocalAuth } = require("whatsapp-web.js");
+const { Client, MessageMedia, LocalAuth, LegacySessionAuth } = require("whatsapp-web.js");
 const { Telegraf } = require("telegraf");
 const config = require("./config");
 const alive = require('./modules/alive');
@@ -14,9 +14,7 @@ const { saveSessionToDb, getSession } = require("./handlers/handleSession");
 const tgbot = new Telegraf(config.TG_BOT_TOKEN);
 
 let client = new Client({ // Create client.
-  authStrategy: new LocalAuth({
-    dataPath: './WWebJS'
-  }),
+  authStrategy: new LegacySessionAuth (),
   puppeteer: { headless: true, args: ["--no-sandbox"] },
 });
 
