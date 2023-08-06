@@ -1,0 +1,73 @@
+{
+  "name": "WhatsGram",
+  "description": "Yet another bot for WhatsApp.",
+  "keywords": ["WhatsApp", "Telegram", "NodeJs"],
+  "repository": "https://github.com/WhatsGram/WhatsGram",
+  "website": "https://t.me/AffanTheBest",
+  "scripts": {
+    "worker": "npm start"
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "https://buildpack-registry.s3.amazonaws.com/buildpacks/jontewks/puppeteer.tgz"
+    }
+  ],
+  "env": {
+    "TG_OWNER_ID": {
+      "description": "Your telegram ID.",
+      "value": "",
+      "required" : true
+    },
+    "TG_BOT_TOKEN": {
+      "description": "Your telegram bot token. Get it from https://t.me/BotFather",
+      "value": "",
+      "required" : true
+    },
+    "REMOVE_BG_API": {
+      "description": "Remove.bg API key. Get it from https://remove.bg",
+      "value": ""
+    },
+    "SESSION_DATA" : {
+      "description": "Puppeteer Session. Set it after succesfully deploying bot.",
+      "value": "",
+      "required": false
+    },
+    "HEROKU_APP_NAME":{
+      "description": "Heroku app name on which WhatsGram is deployed.",
+      "value": "",
+      "required": true
+    },
+    "HEROKU_API_KEY":{
+      "description": "Heroku API key. Get it from https://dashboard.heroku.com/account",
+      "value": "",
+      "required": true
+    },
+    "DB_URL":{
+      "description": "Mongo db database URL. Get it from https://cloud.mongodb.com",
+      "value": ""
+    },
+    "PMGUARD_ENABLED":{
+      "description": "Put true to enable Pm Guard. default is false",
+      "value": "false"
+    },
+    "DETA_PROJECT_KEY": {
+      "description": "Deta project key. Get it from https://deta.sh/",
+      "value": "",
+      "required": "true"
+      
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 0
+    },
+    "worker":{
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "addons": []
+}

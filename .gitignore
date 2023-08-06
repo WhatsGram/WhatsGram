@@ -1,0 +1,14 @@
+node_modules/
+session.json
+data.json
+.env
+temp/
+package-lock.json
+WWebJS
+.session
+build
+.wwebjs_cache
+
+# temp
+zz.sh
+qr.png
